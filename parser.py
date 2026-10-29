@@ -15,8 +15,8 @@ DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
                   'level_max_time': 90}
 
 
-class Parse:
-    def read_config(self, path=CONFIG_PATH):
+class Parser:
+    def _read_config(self, path=CONFIG_PATH):
         with open(path, "r") as f:
             lines = []
             for line in f:
@@ -24,7 +24,7 @@ class Parse:
                     lines.append(line)
         return commentjson.loads("".join(lines))
 
-    def check_arg(self, arg, values):
+    def _check_arg(self, arg, values):
         try:
             if arg in ('lives', 'pacgum', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
                 int(values)
@@ -37,19 +37,23 @@ class Parse:
                         for key, value in d.items():
                             if (key in ('height', 'width') and int(value)):
                                 continue
+                            else:
+                                raise ValueError
                     return True
         except ValueError:
             print(f"WARNING: Invalid data in {arg} : {values}. "
                   "---> Use DEFAULT_VALUE.")
             return False
 
-    def build_config(self, config):
+    def _build_config(self, config):
         new_config = {}
         for arg, value in config.items():
             if arg in DEFAULT_CONFIG:
-                if self.check_arg(arg, value):
+                if self._check_arg(arg, value):
                     if arg == 'levels' and len(value) < 10:
                         value.extend(DEFAULT_CONFIG['levels'][:(10-len(value))])
+                    if arg  in ('lives', 'pacgum', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
+                        value = int(value)
                 else:
                     value = DEFAULT_CONFIG[arg]
                 new_config[arg] = value
@@ -61,14 +65,12 @@ class Parse:
                 print(f"WARNING: Missing {ARG} ---> Use DEFAULT_VALUE")
                 new_config[ARG] = VALUE
         return new_config
-
-
-if __name__ == "__main__":
-    parse = Parse()
-    try:
-        config = parse.read_config()
-        new_config = parse.build_config(config)
-        print(new_config)
-    except ValueError as e:
-        print(f"WARNING: Invalid Json format ---> Use DEFAULT_CONFIG")
-        print(DEFAULT_CONFIG)
+    
+    def get_config(self):
+        try:
+            config = self._read_config()
+            new_config = self._build_config(config)
+            return new_config
+        except ValueError as e:
+            print(f"WARNING: Invalid Json format ---> Use DEFAULT_CONFIG")
+            return DEFAULT_CONFIG
