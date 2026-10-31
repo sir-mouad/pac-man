@@ -5,9 +5,8 @@ from pathlib import Path
 CONFIG_PATH = sys.argv[1]
 
 DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
-                  'levels': [{'width': 21, 'height': 21} for _ in range(10)],
+                  'levels': [{'width': 15, 'height': 15} for _ in range(10)],
                   'lives': 3,
-                  'pacgum': 42,
                   'points_per_pacgum': 10,
                   'points_per_super_pacgum': 50,
                   'points_per_ghost': 200,
@@ -33,6 +32,7 @@ class Parser:
                 if Path(values).suffix == ".json":
                     return True
             if arg == 'levels':
+<<<<<<< Updated upstream
                     for d in values:
                         for key, value in d.items():
                             if (key in ('height', 'width') and int(value)):
@@ -40,6 +40,15 @@ class Parser:
                             else:
                                 raise ValueError
                     return True
+=======
+                for d in values:
+                    for key, value in d.items():
+                        if (key in ('height', 'width') and int(value)):
+                            continue
+                        else:
+                            raise ValueError
+                return True
+>>>>>>> Stashed changes
         except ValueError:
             print(f"WARNING: Invalid data in {arg} : {values}. "
                   "---> Use DEFAULT_VALUE.")
@@ -51,9 +60,14 @@ class Parser:
             if arg in DEFAULT_CONFIG:
                 if self._check_arg(arg, value):
                     if arg == 'levels' and len(value) < 10:
+<<<<<<< Updated upstream
                         value.extend(DEFAULT_CONFIG['levels'][:(10-len(value))])
                     if arg  in ('lives', 'pacgum', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
                         value = int(value)
+=======
+                        value.extend(
+                            DEFAULT_CONFIG['levels'][:(10-len(value))])
+>>>>>>> Stashed changes
                 else:
                     value = DEFAULT_CONFIG[arg]
                 new_config[arg] = value
@@ -65,7 +79,11 @@ class Parser:
                 print(f"WARNING: Missing {ARG} ---> Use DEFAULT_VALUE")
                 new_config[ARG] = VALUE
         return new_config
+<<<<<<< Updated upstream
     
+=======
+
+>>>>>>> Stashed changes
     def get_config(self):
         try:
             config = self._read_config()
