@@ -115,10 +115,6 @@ if __name__ == "__main__":
     config = parse.get_config()
     maze_adapter = MazeAdapter(config)
     level = maze_adapter.generate_level(2)
-<<<<<<< Updated upstream
     print(level.player_start)
     print(level.ghost_starts)
     print(level.super_pacgums)
-=======
-    print(level.player_start, level.ghost_starts, level.super_pacgums)
->>>>>>> Stashed changes
