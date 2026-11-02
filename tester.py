@@ -3,7 +3,7 @@ import sys
 import pygame
 
 from parser import Parser
-from maze_adapter import MazeAdapter
+from engine.maze_adapter import MazeAdapter
 
 CELL = 28
 WALL = 4
