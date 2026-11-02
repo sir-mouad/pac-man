@@ -25,22 +25,13 @@ class Parser:
 
     def _check_arg(self, arg, values):
         try:
-            if arg in ('lives', 'pacgum', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
+            if arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
                 int(values)
                 return True
             if arg == 'highscore_filename':
                 if Path(values).suffix == ".json":
                     return True
             if arg == 'levels':
-<<<<<<< Updated upstream
-                    for d in values:
-                        for key, value in d.items():
-                            if (key in ('height', 'width') and int(value)):
-                                continue
-                            else:
-                                raise ValueError
-                    return True
-=======
                 for d in values:
                     for key, value in d.items():
                         if (key in ('height', 'width') and int(value)):
@@ -48,7 +39,6 @@ class Parser:
                         else:
                             raise ValueError
                 return True
->>>>>>> Stashed changes
         except ValueError:
             print(f"WARNING: Invalid data in {arg} : {values}. "
                   "---> Use DEFAULT_VALUE.")
@@ -60,14 +50,10 @@ class Parser:
             if arg in DEFAULT_CONFIG:
                 if self._check_arg(arg, value):
                     if arg == 'levels' and len(value) < 10:
-<<<<<<< Updated upstream
-                        value.extend(DEFAULT_CONFIG['levels'][:(10-len(value))])
-                    if arg  in ('lives', 'pacgum', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
-                        value = int(value)
-=======
                         value.extend(
                             DEFAULT_CONFIG['levels'][:(10-len(value))])
->>>>>>> Stashed changes
+                    if  arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
+                        value = int(value)
                 else:
                     value = DEFAULT_CONFIG[arg]
                 new_config[arg] = value
@@ -79,11 +65,7 @@ class Parser:
                 print(f"WARNING: Missing {ARG} ---> Use DEFAULT_VALUE")
                 new_config[ARG] = VALUE
         return new_config
-<<<<<<< Updated upstream
     
-=======
-
->>>>>>> Stashed changes
     def get_config(self):
         try:
             config = self._read_config()

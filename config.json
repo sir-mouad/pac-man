@@ -1,15 +1,7 @@
 # Pac-Man settings
 {
-<<<<<<< Updated upstream
-  "highcore_filename": "highscores.json",
-  "levels": [
-    {"width": 20, "height": 20},
-    {"width": 20, "height": 20}
-  ],
-=======
   "highscore_filename": "highscores.json",
   "levels": [],
->>>>>>> Stashed changes
   "lives": 3,
   "pacgum": 42,
   "points_per_pacgum": 10,
