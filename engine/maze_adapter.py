@@ -1,8 +1,8 @@
 from collections import deque
 
-from ..mazegenerator import MazeGenerator
+from mazegenerator import MazeGenerator
 from dataclasses import dataclass, field
-from ..parser import Parser
+from parser import Parser
 
 
 @dataclass
