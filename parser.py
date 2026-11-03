@@ -52,7 +52,7 @@ class Parser:
                     if arg == 'levels' and len(value) < 10:
                         value.extend(
                             DEFAULT_CONFIG['levels'][:(10-len(value))])
-                    if  arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
+                    if arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
                         value = int(value)
                 else:
                     value = DEFAULT_CONFIG[arg]
@@ -65,7 +65,7 @@ class Parser:
                 print(f"WARNING: Missing {ARG} ---> Use DEFAULT_VALUE")
                 new_config[ARG] = VALUE
         return new_config
-    
+
     def get_config(self):
         try:
             config = self._read_config()

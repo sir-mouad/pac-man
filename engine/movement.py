@@ -43,7 +43,6 @@ class Mover():
             if self.direction is Direction.LEFT:
                 self.position = (x-1, y)
 
-
     def set_direction(self, direction):
         self.requested_direction = direction
 
@@ -56,6 +55,7 @@ class Player(Mover):
         self.position = start
         self.direction = None
         self.requested_direction = None
+
 
 class Ghost(Mover):
     def __init__(self, corner):

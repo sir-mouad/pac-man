@@ -37,11 +37,14 @@ def draw_walls(screen, level):
             if north:
                 pygame.draw.line(screen, BLUE, (left, top), (right, top), WALL)
             if east:
-                pygame.draw.line(screen, BLUE, (right, top), (right, bottom), WALL)
+                pygame.draw.line(screen, BLUE, (right, top),
+                                 (right, bottom), WALL)
             if south:
-                pygame.draw.line(screen, BLUE, (left, bottom), (right, bottom), WALL)
+                pygame.draw.line(screen, BLUE, (left, bottom),
+                                 (right, bottom), WALL)
             if west:
-                pygame.draw.line(screen, BLUE, (left, top), (left, bottom), WALL)
+                pygame.draw.line(screen, BLUE, (left, top),
+                                 (left, bottom), WALL)
 
 
 def draw_level(screen, level, font, label):
