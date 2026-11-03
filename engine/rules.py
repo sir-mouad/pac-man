@@ -80,4 +80,3 @@ class GameRules:
 
     def is_last_level(self):
         return self.level_number >= len(self.config["levels"])
-# co "change the logic of save the highscores from useing a tmp file to save directly and make some changes in rules.py like rename some methods and "
