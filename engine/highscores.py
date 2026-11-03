@@ -2,6 +2,10 @@ import json
 import re
 
 
+MAX_SCORES = 10
+MAX_NAME_LENGTH = 10
+
+
 class Highscores:
     def __init__(self, path):
         self.path = path
@@ -13,75 +17,87 @@ class Highscores:
         try:
             with open(self.path, "r") as f:
                 data = json.load(f)
-            self.is_load = True
-            self._validate_data(data)
-        except (FileExistsError, json.JSONDecodeError) as e:
-            print(f"WARNING: {e}")
+        except FileNotFoundError:
+            self.scores = []
+            self.is_load = False
+            return
+        except (OSError, json.JSONDecodeError) as e:
+            print(f"WARNING: cannot read highscores ({e}) ---> USE_EMPTY_LIST")
+            self.scores = []
+            self.is_load = False
+            return
+        self._validate_data(data)
 
     def save(self):
-        with open(self.path, "w") as f:
-            json.dump(self.scores, f)
+        try:
+            with open(self.path, "w") as f:
+                json.dump({"highscores": self.scores}, f)
+        except OSError as e:
+            print(f"WARNING: cannot save highscores ({e})")
 
-    def top(self):
-        top_scores = []
-        for i in range(10):
-            if len(self.scores) <= i:
-                break
-            else:
-                top_scores.append(self.scores[i])
-        return top_scores
+    def top(self, n=MAX_SCORES):
+        return [dict(entry) for entry in self.scores[:n]]
 
     def qualifies(self, score):
-        if len(self.scores) > 10:
+        if len(self.scores) < MAX_SCORES:
             return True
-        else:
-            if self.scores[10-1]['score'] < score:
-                return True
-            else:
-                return False
+        return score > self.scores[-1]["score"]
 
     def add(self, name, score):
-        self.scores.append[{name: score}]
+        self.scores.append({"name": name, "score": score})
         self._sort_and_trim(self.scores)
 
-    def sumbit(self, name, score):
-        if self._validate_name(name):
-            self.add(name, score)
-            self.save()
-            return True
-        else:
+    def submit(self, name, score):
+        clean_name = self._validate_name(name)
+        if clean_name is None:
             return False
-
-    def _validate_name(self, name):
-        match = re.fullmatch(r"[a-zA-Z0-9 ]{1,10}", name)
-        if not match:
-            return False
+        self.add(clean_name, score)
+        self.save()
         return True
 
+    def _validate_name(self, name):
+        if not isinstance(name, str):
+            return None
+        cleaned = name.strip()
+        if re.fullmatch(r"[a-zA-Z0-9 ]{1,10}", cleaned):
+            return cleaned
+        return None
+
     def _validate_score(self, score):
+        if isinstance(score, bool):
+            return None
         try:
-            int(score)
-            if score < 0:
-                return False
-        except ValueError:
-            return False
+            value = int(score)
+        except (TypeError, ValueError):
+            return None
+        if value < 0:
+            return None
+        return value
 
     def _sort_and_trim(self, scores):
-        sort_scores = sorted(
-            scores, key=lambda x: x['score'], reverse=True)
-        if len(sort_scores) >= 10:
-            self.scores = sort_scores[:10]
-            return
-        self.scores = sort_scores
+        self.scores = sorted(
+            scores, key=lambda x: x["score"], reverse=True)[:MAX_SCORES]
 
     def _validate_data(self, data):
         try:
-            scores = data["highscores"]
-            new_scores = []
-            for name, score in scores.items():
-                if (self._validate_name(name) and self._validate_score(score)):
-                    new_scores.append({name: score})
-            self._sort_and_trim(new_scores)
-        except KeyError:
-            self.is_load = False
+            entries = data["highscores"]
+        except (KeyError, TypeError):
             print("WARNING: highscores list is not found ---> USE_EMPTY_LIST")
+            self.scores = []
+            self.is_load = False
+            return
+        if not isinstance(entries, list):
+            print("WARNING: highscores is not a list ---> USE_EMPTY_LIST")
+            self.scores = []
+            self.is_load = False
+            return
+        valid = []
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            name = self._validate_name(entry.get("name"))
+            score = self._validate_score(entry.get("score"))
+            if name is not None and score is not None:
+                valid.append({"name": name, "score": score})
+        self._sort_and_trim(valid)
+        self.is_load = True

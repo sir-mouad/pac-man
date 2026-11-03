@@ -8,7 +8,7 @@ class Direction(Enum):
     RIGHT = 4
 
 
-class Phase(Enum):
+class State(Enum):
     PLAYING = 1
     PAUSED = 2
     GAME_OVER = 3
