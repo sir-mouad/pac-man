@@ -12,12 +12,12 @@ class GhostBehavior:
     def target(self, level, player, blinky):
         ...
 
-
+# (Red)
 class BlinkyBehavior(GhostBehavior):
     def target(self, level, player, blinky):
         return player.position
 
-
+# (Pink)
 class PinkyBehavior(GhostBehavior):
     def target(self, level, player, blinky):
         x, y = player.position
@@ -34,7 +34,7 @@ class PinkyBehavior(GhostBehavior):
         return x, y
 
 
-# the only one use blinky positions
+# (Cyan / Blue) ---> the only one use blinky positions
 class InkyBehavior(GhostBehavior):
     def target(self, level, player, blinky):
         px, py = player.position
@@ -54,9 +54,7 @@ class InkyBehavior(GhostBehavior):
         y = max(0, min(y + vector_y, level.height - 1))
         return x, y
 
-# Calculate the Euclidean distance
-
-
+# (Orange) ---> Calculate the Euclidean distance
 class ClydeBehavior(GhostBehavior):
     def __init__(self, ghost):
         self.ghost = ghost
@@ -74,18 +72,63 @@ class GhostAI:
     def __init__(self, rng, respawn_delay):
         self.rng = rng
         self.respawn_delay = respawn_delay
+        self.waiting = {}
 
-    def update(self, level, player, ghosts):
-        ...
+    def update(self, level, player, ghosts, dt):
+        for ghost in ghosts:
+            if ghost in self.waiting:
+                self._update_respawn(level, ghost, dt)
+                continue
+            direction = self._choose_direction(level, player, ghosts, ghost)
+            ghost.set_direction(direction)
 
     def _choose_direction(self, level, player, ghosts, ghost):
-        ...
+        if ghost.edible:
+            return self._flee_direction(level, player, ghost)
+        else:
+            blinky = None
+            for g in ghosts:
+                if isinstance(g.behavior, BlinkyBehavior):
+                    blinky = g
+                    break
+            target = ghost.behavior.target(level, player, blinky)
+            return self._chase_direction(level, ghost, target)
 
     def _chase_direction(self, level, ghost, target):
-        ...
+        open_directions = self._open_directions(level, ghost)
+        return self._best_direction(level, ghost, target, open_directions)
 
     def _flee_direction(self, level, player, ghost):
-        ...
+        open_directions = self._open_directions(level, ghost)
+        if not open_directions:
+            return None
+        if len(open_directions) == 1:
+            return open_directions[0]
+
+        choices = list(open_directions)
+        if ghost.direction is not None:
+            back = REVERSE[ghost.direction]
+            if back in choices and len(choices) > 1:
+                choices.remove(back)
+
+        x, y = ghost.position
+        tx, ty = player.position
+        best = None
+        best_distance = None
+        for direction in choices:
+            if direction is Direction.UP:
+                nx, ny = x, y - 1
+            if direction is Direction.RIGHT:
+                nx, ny = x + 1, y
+            if direction is Direction.DOWN:
+                nx, ny = x, y + 1
+            if direction is Direction.LEFT:
+                nx, ny = x - 1, y
+            distance = (nx - tx) ** 2 + (ny - ty) ** 2
+            if best_distance is None or distance > best_distance:
+                best = direction
+                best_distance = distance
+        return best
 
     def _open_directions(self, level, ghost):
         walls = level.walls
@@ -134,8 +177,8 @@ class GhostAI:
                 best_distance = distance
         return best
 
-    def _pick_fallback(self, level, ghost):
-        ...
-
-    def _update_respawn(self, level, ghost):
-        ...
+    def _update_respawn(self, level, ghost, dt):
+        self.waiting[ghost] -= dt
+        if self.waiting[ghost] <= 0:
+            del self.waiting[ghost]
+            ghost.respawn()
