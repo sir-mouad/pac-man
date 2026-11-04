@@ -69,15 +69,14 @@ class ClydeBehavior(GhostBehavior):
 
 
 class GhostAI:
-    def __init__(self, rng, respawn_delay):
-        self.rng = rng
-        self.respawn_delay = respawn_delay
+    def __init__(self):
+        self.respawn_delay = 5.0
         self.waiting = {}
 
     def update(self, level, player, ghosts, dt):
         for ghost in ghosts:
             if ghost in self.waiting:
-                self._update_respawn(level, ghost, dt)
+                self._update_respawn(ghost, dt)
                 continue
             direction = self._choose_direction(level, player, ghosts, ghost)
             ghost.set_direction(direction)
@@ -176,8 +175,11 @@ class GhostAI:
                 best = direction
                 best_distance = distance
         return best
+    
+    def start_respawn(self, ghost):
+        self.waiting[ghost] = self.respawn_delay
 
-    def _update_respawn(self, level, ghost, dt):
+    def _update_respawn(self, ghost, dt):
         self.waiting[ghost] -= dt
         if self.waiting[ghost] <= 0:
             del self.waiting[ghost]
