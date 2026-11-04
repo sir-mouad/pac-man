@@ -1,6 +1,6 @@
 from contracts import Direction
 
-OPPOSITE = {
+REVERSE = {
     Direction.UP: Direction.DOWN,
     Direction.DOWN: Direction.UP,
     Direction.LEFT: Direction.RIGHT,
@@ -55,9 +55,12 @@ class InkyBehavior(GhostBehavior):
         return x, y
 
 # Calculate the Euclidean distance
+
+
 class ClydeBehavior(GhostBehavior):
     def __init__(self, ghost):
         self.ghost = ghost
+
     def target(self, level, player, blinky):
         px, py = player.position
         gx, gy = self.ghost.position
@@ -108,7 +111,7 @@ class GhostAI:
 
         choices = list(open_directions)
         if ghost.direction is not None:
-            back = OPPOSITE[ghost.direction]
+            back = REVERSE[ghost.direction]
             if back in choices and len(choices) > 1:
                 choices.remove(back)
 
