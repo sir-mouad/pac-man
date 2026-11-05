@@ -24,6 +24,14 @@ class GameRules:
             ghost.corner = start
             ghost.respawn()
 
+    def reset(self):
+        self.score = 0
+        self.lives = self.config["lives"]
+        self.level_number = 1
+        self.time_left = self.config["level_max_time"]
+        self.status = State.PLAYING
+        self.edible_time_left = 0.0
+
     def collect_items(self, level, player, ghosts):
         cell = player.position
         if cell in level.pacgums:
