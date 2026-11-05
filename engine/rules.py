@@ -1,4 +1,4 @@
-from contracts import State
+from engine.contracts import State
 
 
 class GameRules:
@@ -14,6 +14,8 @@ class GameRules:
         self.points_per_super_pacgum = config["points_per_super_pacgum"]
         self.points_per_ghost = config["points_per_ghost"]
         self.edible_duration = 8.0
+        self.invincible = False
+
 
     def start_level(self, level, player, ghosts):
         self.time_left = self.config["level_max_time"]
@@ -31,6 +33,8 @@ class GameRules:
         self.time_left = self.config["level_max_time"]
         self.status = State.PLAYING
         self.edible_time_left = 0.0
+        self.invincible = False
+
 
     def collect_items(self, level, player, ghosts):
         cell = player.position
@@ -45,6 +49,8 @@ class GameRules:
                 ghost.edible = True
 
     def check_ghost_contact(self, player, ghosts):
+        if self.invincible:
+            return
         for ghost in ghosts:
             if ghost.position != player.position:
                 continue
