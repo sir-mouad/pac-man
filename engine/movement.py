@@ -66,6 +66,7 @@ class Mover:
 class Player(Mover):
     def __init__(self, start):
         super().__init__(start, direction=None, move_interval=0.15)
+        self.start = start
         self.walk_through_walls = False
 
     def reset(self, start):

@@ -31,7 +31,7 @@ class Highscores:
     def save(self):
         try:
             with open(self.path, "w") as f:
-                json.dump({"highscores": self.scores}, f)
+                json.dump({"highscores": self.scores}, f, indent=4)
         except OSError as e:
             print(f"WARNING: cannot save highscores ({e})")
 

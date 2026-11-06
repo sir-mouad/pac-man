@@ -570,10 +570,10 @@ def ask_name(screen, fonts, clock, snap):
         clock.tick(FPS)
 
 
-def run(config_path):
+def run():
     pygame.init()
 
-    engine = GameEngine(config_path)
+    engine = GameEngine()
 
     fonts = get_fonts()
     clock = pygame.time.Clock()
@@ -617,6 +617,19 @@ def run(config_path):
                     if snap.state == State.PLAYING:
                         engine.pause_game()
                         paused = not paused
+
+                elif not paused and event.key in (
+                    pygame.K_1, pygame.K_2, pygame.K_3,
+                    pygame.K_4, pygame.K_5
+                ):
+                    cheats = {
+                        pygame.K_1: "skip_level",
+                        pygame.K_2: "walk_through_walls",
+                        pygame.K_3: "all_super",
+                        pygame.K_4: "invincible",
+                        pygame.K_5: "end_game",
+                    }
+                    engine.cheat(cheats[event.key])
 
                 elif event.key in KEY_TO_DIRECTION and not paused:
                     engine.set_direction(
@@ -666,8 +679,5 @@ def run(config_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <config_path>")
-        sys.exit(1)
 
-    run(sys.argv[1])
+    run()

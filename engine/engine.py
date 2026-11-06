@@ -4,11 +4,11 @@ from engine.maze_adapter import MazeAdapter
 from engine.rules import GameRules
 from engine.ghosts import GhostAI, BlinkyBehavior, PinkyBehavior, InkyBehavior, ClydeBehavior
 from engine.movement import Player, Ghost
-from engine.contracts import State, Direction, GameSnapshot, GhostView
+from engine.contracts import State, GameSnapshot, GhostView
 
 
 class GameEngine:
-    def __init__(self, config_path):
+    def __init__(self):
         self.parser = Parser()
         self.config = self.parser.get_config()
         self.highscores = Highscores(self.config["highscore_filename"])
@@ -49,7 +49,7 @@ class GameEngine:
         self._handle_eaten_ghosts(eaten)
         self.rules.collect_items(self.level, self.player, self.ghosts)
         self.rules.check_ghost_contact(self.player, self.ghosts)
-        self.rules.tick(dt)
+        self.rules.tick(dt, self.ghosts)
         self.rules.check_end(self.level)
         if not self.level.pacgums and not self.level.super_pacgums:
             if not self.rules.is_last_level():
@@ -65,11 +65,11 @@ class GameEngine:
         elif action == "all_super":
             self.level.super_pacgums |= self.level.pacgums
             self.level.pacgums.clear()
+        elif action == "invincible":
+            self.rules.invincible = True
         elif action == "end_game":
             self.rules.score = 133333333333337
             self.rules.status = State.VICTORY
-        elif action == "invincible":
-            self.rules.invincible = True
 
     def submit_name(self, raw_name):
         return self.highscores.submit(raw_name, self.rules.score)

@@ -11,7 +11,7 @@ DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
                   'points_per_super_pacgum': 50,
                   'points_per_ghost': 200,
                   'seed': 42,
-                  'level_max_time': 90}
+                  'level_max_time': 180}
 
 
 class Parser:
@@ -68,6 +68,9 @@ class Parser:
 
     def get_config(self):
         try:
+            if len(sys.argv) != 2:
+                print("Usage: python3 pac-man.py <config_path>")
+                sys.exit(1)
             config = self._read_config()
             new_config = self._build_config(config)
             return new_config

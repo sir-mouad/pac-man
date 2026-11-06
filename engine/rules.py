@@ -16,7 +16,6 @@ class GameRules:
         self.edible_duration = 8.0
         self.invincible = False
 
-
     def start_level(self, level, player, ghosts):
         self.time_left = self.config["level_max_time"]
         self.edible_time_left = 0.0
@@ -34,7 +33,6 @@ class GameRules:
         self.status = State.PLAYING
         self.edible_time_left = 0.0
         self.invincible = False
-
 
     def collect_items(self, level, player, ghosts):
         cell = player.position
@@ -57,17 +55,18 @@ class GameRules:
             if ghost.edible:
                 self.eat_ghost(ghost)
             else:
-                self.lose_life(player)
+                self.lose_life(player, ghosts)
                 return
 
-    def tick(self, dt):
+    def tick(self, dt, ghosts):
         if self.status is not State.PLAYING:
             return
         self.time_left = max(0.0, self.time_left - dt)
         if self.edible_time_left > 0:
             self.edible_time_left = max(0.0, self.edible_time_left - dt)
             if self.edible_time_left == 0:
-                pass
+                for ghost in ghosts:
+                    ghost.edible = False
 
     def check_end(self, level):
         if self.lives <= 0:
@@ -84,9 +83,11 @@ class GameRules:
         self.score += self.points_per_ghost
         ghost.respawn()
 
-    def lose_life(self, player):
+    def lose_life(self, player, ghosts):
         self.lives -= 1
-        player.reset(player.position)
+        player.reset(player.start)
+        for ghost in ghosts:
+            ghost.respawn()
 
     def next_level(self):
         self.level_number += 1
