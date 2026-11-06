@@ -12,6 +12,10 @@ class Mover:
 
     def can_move(self, level, direction):
         if getattr(self, "walk_through_walls", False):
+            x, y = self.position
+            x, y = self._next_cell(x, y, direction)
+            if x < 0 or x >= level.width or y < 0 or y >= level.height:
+                return False
             return True
 
         walls = level.walls
@@ -49,15 +53,17 @@ class Mover:
             return
 
         x, y = self.position
+        self.position = self._next_cell(x, y, self.direction)
 
-        if self.direction is Direction.UP:
-            self.position = (x, y - 1)
-        elif self.direction is Direction.RIGHT:
-            self.position = (x + 1, y)
-        elif self.direction is Direction.DOWN:
-            self.position = (x, y + 1)
-        elif self.direction is Direction.LEFT:
-            self.position = (x - 1, y)
+    def _next_cell(self, x, y, direction):
+        if direction is Direction.UP:
+            return (x, y - 1)
+        elif direction is Direction.RIGHT:
+            return (x + 1, y)
+        elif direction is Direction.DOWN:
+            return (x, y + 1)
+        elif direction is Direction.LEFT:
+            return (x - 1, y)
 
     def set_direction(self, direction):
         self.requested_direction = direction

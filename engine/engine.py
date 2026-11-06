@@ -89,9 +89,7 @@ class GameEngine:
                                      super_pacgums=set(
                                          self.level.super_pacgums),
                                      width=self.level.width,
-                                     height=self.level.height,
-                                     cheats_active=set(),
-                                     message=None)
+                                     height=self.level.height)
         return game_snapshot
 
     def _start_level(self, index):

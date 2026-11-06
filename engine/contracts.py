@@ -1,6 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass, field
 
+
 class Direction(Enum):
     UP = 1
     DOWN = 2
@@ -13,6 +14,7 @@ class State(Enum):
     PAUSED = 2
     GAME_OVER = 3
     VICTORY = 4
+
 
 @dataclass
 class GameSnapshot:
@@ -29,8 +31,7 @@ class GameSnapshot:
     super_pacgums: set[tuple[int, int]]
     width: int
     height: int
-    cheats_active: set[str] = field(default_factory=set)
-    message: str | None = None
+
 
 @dataclass(frozen=True)
 class GhostView:

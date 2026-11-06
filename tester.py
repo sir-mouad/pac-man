@@ -273,14 +273,14 @@ def draw_hud(surface, fonts, snap):
                 fonts["large"], color, (x, 49)
             )
 
-    if snap.message:
-        draw_text(
-            surface,
-            snap.message,
-            fonts["small"],
-            WHITE,
-            (PADDING, HEIGHT - 30)
-        )
+    # if snap.message:
+    #     draw_text(
+    #         surface,
+    #         snap.message,
+    #         fonts["small"],
+    #         WHITE,
+    #         (PADDING, HEIGHT - 30)
+    #     )
 
 
 def draw_game(surface, fonts, snap):
