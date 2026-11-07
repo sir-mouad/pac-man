@@ -44,10 +44,13 @@ class GameEngine:
             g.step(self.level, dt)
         eaten = []
         for g in self.ghosts:
-            if g.edible and g.position == self.player.position:
+            if g.edible and g.position == self.player.position and g.protected_time == 0:
                 eaten.append(g)
         self._handle_eaten_ghosts(eaten)
         self.rules.collect_items(self.level, self.player, self.ghosts)
+        for g in self.ghosts:
+            if g.protected_time > 0:
+                g.protected_time = max(0.0, g.protected_time - dt)
         self.rules.check_ghost_contact(self.player, self.ghosts)
         self.rules.tick(dt, self.ghosts)
         self.rules.check_end(self.level)

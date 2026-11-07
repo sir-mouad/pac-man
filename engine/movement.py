@@ -9,6 +9,8 @@ class Mover:
         self.requested_direction = None
         self.move_interval = move_interval
         self.move_timer = 0.0
+        self.protected_time = 0.0
+
 
     def can_move(self, level, direction):
         if getattr(self, "walk_through_walls", False):
@@ -94,3 +96,5 @@ class Ghost(Mover):
         self.requested_direction = None
         self.move_timer = 0.0
         self.edible = False
+        self.protected_time = 3.0
+

@@ -54,6 +54,8 @@ class GameRules:
                 continue
             if ghost.edible:
                 self.eat_ghost(ghost)
+            if ghost.protected_time > 0:
+                continue
             else:
                 self.lose_life(player, ghosts)
                 return

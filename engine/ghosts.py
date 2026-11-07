@@ -13,16 +13,20 @@ class GhostBehavior:
         ...
 
 # (Red)
+
+
 class BlinkyBehavior(GhostBehavior):
     def target(self, level, player, blinky):
         return player.position
 
 # (Pink)
+
+
 class PinkyBehavior(GhostBehavior):
     def target(self, level, player, blinky):
         x, y = player.position
         if player.direction is Direction.UP:
-            x, y = x, y - 4
+            x, y = x - 4, y - 4
         if player.direction is Direction.RIGHT:
             x, y = x + 4, y
         if player.direction is Direction.DOWN:
@@ -48,13 +52,15 @@ class InkyBehavior(GhostBehavior):
         if player.direction is Direction.LEFT:
             x, y = px - 2, py
         x1, y1 = blinky.position
-        vector_x = 2 * (px - x1)
-        vector_y = 2 * (py - y1)
+        vector_x = 2 * (x - x1)
+        vector_y = 2 * (y - y1)
         x = max(0, min(x + vector_x, level.width - 1))
         y = max(0, min(y + vector_y, level.height - 1))
         return x, y
 
 # (Orange) ---> Calculate the Euclidean distance
+
+
 class ClydeBehavior(GhostBehavior):
     def __init__(self, ghost):
         self.ghost = ghost
@@ -70,7 +76,7 @@ class ClydeBehavior(GhostBehavior):
 
 class GhostAI:
     def __init__(self):
-        self.respawn_delay = 5.0
+        self.respawn_delay = 3.0
         self.waiting = {}
 
     def update(self, level, player, ghosts, dt):
@@ -175,7 +181,7 @@ class GhostAI:
                 best = direction
                 best_distance = distance
         return best
-    
+
     def start_respawn(self, ghost):
         self.waiting[ghost] = self.respawn_delay
 
