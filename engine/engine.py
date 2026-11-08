@@ -33,15 +33,14 @@ class GameEngine:
         elif self.rules.status is State.PAUSED:
             self.rules.status = State.PLAYING
 
-    def update(self, dt):
+    def update(self, frame_time):
         if self.rules.status is not State.PLAYING:
             return
-        self.player.step(self.level, dt)
-
-        self.ai.update(self.level, self.player, self.ghosts, dt)
-
-        for g in self.ghosts:
-            g.step(self.level, dt)
+        self.player.step(self.level, frame_time)
+        if self.player.direction is not None:
+            self.ai.update(self.level, self.player, self.ghosts, frame_time)
+            for g in self.ghosts:
+                g.step(self.level, frame_time)
         eaten = []
         for g in self.ghosts:
             if g.edible and g.position == self.player.position and g.protected_time == 0:
@@ -50,9 +49,9 @@ class GameEngine:
         self.rules.collect_items(self.level, self.player, self.ghosts)
         for g in self.ghosts:
             if g.protected_time > 0:
-                g.protected_time = max(0.0, g.protected_time - dt)
+                g.protected_time = max(0.0, g.protected_time - frame_time)
         self.rules.check_ghost_contact(self.player, self.ghosts)
-        self.rules.tick(dt, self.ghosts)
+        self.rules.updtae_times(frame_time, self.ghosts)
         self.rules.check_end(self.level)
         if not self.level.pacgums and not self.level.super_pacgums:
             if not self.rules.is_last_level():

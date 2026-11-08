@@ -79,10 +79,10 @@ class GhostAI:
         self.respawn_delay = 3.0
         self.waiting = {}
 
-    def update(self, level, player, ghosts, dt):
+    def update(self, level, player, ghosts, frame_time):
         for ghost in ghosts:
             if ghost in self.waiting:
-                self._update_respawn(ghost, dt)
+                self._update_respawn(ghost, frame_time)
                 continue
             direction = self._choose_direction(level, player, ghosts, ghost)
             ghost.set_direction(direction)
@@ -185,8 +185,8 @@ class GhostAI:
     def start_respawn(self, ghost):
         self.waiting[ghost] = self.respawn_delay
 
-    def _update_respawn(self, ghost, dt):
-        self.waiting[ghost] -= dt
+    def _update_respawn(self, ghost, frame_time):
+        self.waiting[ghost] -= frame_time
         if self.waiting[ghost] <= 0:
             del self.waiting[ghost]
             ghost.respawn()

@@ -60,12 +60,12 @@ class GameRules:
                 self.lose_life(player, ghosts)
                 return
 
-    def tick(self, dt, ghosts):
+    def updtae_times(self, frame_time, ghosts):
         if self.status is not State.PLAYING:
             return
-        self.time_left = max(0.0, self.time_left - dt)
+        self.time_left = max(0.0, self.time_left - frame_time)
         if self.edible_time_left > 0:
-            self.edible_time_left = max(0.0, self.edible_time_left - dt)
+            self.edible_time_left = max(0.0, self.edible_time_left - frame_time)
             if self.edible_time_left == 0:
                 for ghost in ghosts:
                     ghost.edible = False
