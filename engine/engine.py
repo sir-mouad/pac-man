@@ -41,6 +41,7 @@ class GameEngine:
             self.ai.update(self.level, self.player, self.ghosts, frame_time)
             for g in self.ghosts:
                 g.step(self.level, frame_time)
+            self.rules.updtae_times(frame_time, self.ghosts)
         eaten = []
         for g in self.ghosts:
             if g.edible and g.position == self.player.position and g.protected_time == 0:
@@ -51,7 +52,6 @@ class GameEngine:
             if g.protected_time > 0:
                 g.protected_time = max(0.0, g.protected_time - frame_time)
         self.rules.check_ghost_contact(self.player, self.ghosts)
-        self.rules.updtae_times(frame_time, self.ghosts)
         self.rules.check_end(self.level)
         if not self.level.pacgums and not self.level.super_pacgums:
             if not self.rules.is_last_level():
@@ -115,3 +115,4 @@ class GameEngine:
         for ghost in eaten:
             self.rules.eat_ghost(ghost)
             self.ai.start_respawn(ghost)
+            ghost.protected_time = 3.0

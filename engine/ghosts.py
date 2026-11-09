@@ -13,15 +13,11 @@ class GhostBehavior:
         ...
 
 # (Red)
-
-
 class BlinkyBehavior(GhostBehavior):
     def target(self, level, player, blinky):
         return player.position
 
 # (Pink)
-
-
 class PinkyBehavior(GhostBehavior):
     def target(self, level, player, blinky):
         x, y = player.position

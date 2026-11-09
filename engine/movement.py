@@ -96,5 +96,3 @@ class Ghost(Mover):
         self.requested_direction = None
         self.move_timer = 0.0
         self.edible = False
-        self.protected_time = 3.0
-

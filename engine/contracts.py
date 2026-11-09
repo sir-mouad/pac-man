@@ -33,7 +33,7 @@ class GameSnapshot:
     height: int
 
 
-@dataclass(frozen=True)
+@dataclass
 class GhostView:
     position: tuple[int, int]
     edible: bool
