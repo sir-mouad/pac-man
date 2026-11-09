@@ -14,11 +14,14 @@ DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
 
 class Parser:
     def _read_config(self, path):
-        with open(path, "r") as f:
-            lines = []
-            for line in f:
-                if not line.lstrip().startswith("#"):
-                    lines.append(line)
+        try:
+            with open(path, "r") as f:
+                lines = []
+                for line in f:
+                    if not line.lstrip().startswith("#"):
+                        lines.append(line)
+        except (FileNotFoundError, PermissionError):
+            return DEFAULT_CONFIG
         return commentjson.loads("".join(lines))
 
     def _check_arg(self, arg, values):
@@ -44,6 +47,8 @@ class Parser:
             return False
 
     def _build_config(self, config):
+        if config is DEFAULT_CONFIG:
+            return config
         new_config = {}
         for arg, value in config.items():
             if arg in DEFAULT_CONFIG:
