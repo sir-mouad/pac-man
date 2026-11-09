@@ -1,4 +1,4 @@
-from engine.contracts import State
+from engine.shared import State
 
 
 class GameRules:

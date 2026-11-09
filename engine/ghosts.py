@@ -1,4 +1,4 @@
-from engine.contracts import Direction
+from engine.shared import Direction
 
 REVERSE = {
     Direction.UP: Direction.DOWN,

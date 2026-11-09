@@ -4,7 +4,7 @@ from engine.maze_adapter import MazeAdapter
 from engine.rules import GameRules
 from engine.ghosts import GhostAI, BlinkyBehavior, PinkyBehavior, InkyBehavior, ClydeBehavior
 from engine.movement import Player, Ghost
-from engine.contracts import State, GameSnapshot, GhostView
+from engine.shared import State, GameSnapshot, GhostView
 
 
 class GameEngine:

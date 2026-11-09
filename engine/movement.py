@@ -1,5 +1,5 @@
 
-from engine.contracts import Direction
+from engine.shared import Direction
 
 
 class Mover:

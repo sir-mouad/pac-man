@@ -1,8 +1,8 @@
 # Pac-Man settings
 {
   "highscore_filename": "highscores.json",
-  "levels": [],
-  "lives": 3,
+  "levels": [{"width": 10, "height": 10}],
+  "lives": 5,
   "points_per_pacgum": 10,
   "points_per_super_pacgum": 50,
   "points_per_ghost": 200,

@@ -1,10 +1,7 @@
-
-import sys
-import math
 import pygame
 
 from engine.engine import GameEngine
-from engine.contracts import State, Direction
+from engine.shared import State, Direction
 
 
 CELL = 30
