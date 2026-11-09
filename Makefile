@@ -1,11 +1,13 @@
+ARG=config.json
+
 install:
 	uv sync
 
 run:
-	uv run python -m pac-man $(arg)
+	uv run python -m pac-man $(ARG)
 
 debug:
-	uv run python -m pdb pac-man $(arg)
+	uv run python -m pdb pac-man $(ARG)
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

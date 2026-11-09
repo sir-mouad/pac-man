@@ -2,8 +2,6 @@ import sys
 import commentjson
 from pathlib import Path
 
-CONFIG_PATH = sys.argv[1]
-
 DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
                   'levels': [{'width': 20, 'height': 15} for _ in range(10)],
                   'lives': 3,
@@ -15,7 +13,7 @@ DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
 
 
 class Parser:
-    def _read_config(self, path=CONFIG_PATH):
+    def _read_config(self, path):
         with open(path, "r") as f:
             lines = []
             for line in f:
@@ -71,10 +69,8 @@ class Parser:
 
     def get_config(self):
         try:
-            if len(sys.argv) != 2:
-                print("Usage: python3 pac-man.py <config_path>")
-                sys.exit(1)
-            config = self._read_config()
+            config_path = sys.argv[1]
+            config = self._read_config(config_path)
             new_config = self._build_config(config)
             return new_config
         except ValueError:
