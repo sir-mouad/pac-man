@@ -31,8 +31,10 @@ class Parser:
                 int(values)
                 return True
             if arg == 'highscore_filename':
-                if Path(values).suffix == ".json":
+                if Path(values).suffix == ".json" and len(values) >=5:
                     return True
+                else:
+                    raise ValueError
             if arg == 'levels':
                 for d in values:
                     for key, value in d.items():
