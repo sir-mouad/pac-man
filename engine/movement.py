@@ -11,7 +11,6 @@ class Mover:
         self.move_timer = 0.0
         self.protected_time = 0.0
 
-
     def can_move(self, level, direction):
         if getattr(self, "walk_through_walls", False):
             x, y = self.position

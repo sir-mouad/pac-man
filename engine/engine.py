@@ -2,7 +2,8 @@ from engine.parser import Parser
 from engine.highscores import Highscores
 from engine.maze_adapter import MazeAdapter
 from engine.rules import GameRules
-from engine.ghosts import GhostAI, BlinkyBehavior, PinkyBehavior, InkyBehavior, ClydeBehavior
+from engine.ghosts import GhostAI, BlinkyBehavior, PinkyBehavior, \
+    InkyBehavior, ClydeBehavior
 from engine.movement import Player, Ghost
 from engine.shared import State, GameSnapshot, GhostView
 
@@ -44,7 +45,8 @@ class GameEngine:
             self.rules.updtae_times(frame_time, self.ghosts)
         eaten = []
         for g in self.ghosts:
-            if g.edible and g.position == self.player.position and g.protected_time == 0:
+            if g.edible and g.position == self.player.position and \
+                    g.protected_time == 0:
                 eaten.append(g)
         self._handle_eaten_ghosts(eaten)
         self.rules.collect_items(self.level, self.player, self.ghosts)
@@ -74,10 +76,10 @@ class GameEngine:
             self.rules.status = State.VICTORY
         elif action == "stop_cheat":
             corners = [
-            (0, 0),
-            (self.level.width - 1, 0),
-            (0, self.level.height - 1),
-            (self.level.width - 1, self.level.height - 1),
+                (0, 0),
+                (self.level.width - 1, 0),
+                (0, self.level.height - 1),
+                (self.level.width - 1, self.level.height - 1),
             ]
             self.player.walk_through_walls = False
             restore = set()

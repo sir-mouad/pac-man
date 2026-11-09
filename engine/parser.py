@@ -25,7 +25,8 @@ class Parser:
 
     def _check_arg(self, arg, values):
         try:
-            if arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
+            if arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum',
+                       'points_per_ghost', 'level_max_time', 'seed'):
                 int(values)
                 return True
             if arg == 'highscore_filename':
@@ -52,7 +53,9 @@ class Parser:
                     if arg == 'levels' and len(value) < 10:
                         value.extend(
                             DEFAULT_CONFIG['levels'][:(10-len(value))])
-                    if arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum', 'points_per_ghost', 'level_max_time', 'seed'):
+                    if arg in ('lives', 'points_per_pacgum',
+                               'points_per_super_pacgum', 'points_per_ghost',
+                               'level_max_time', 'seed'):
                         value = int(value)
                 else:
                     value = DEFAULT_CONFIG[arg]
@@ -74,6 +77,6 @@ class Parser:
             config = self._read_config()
             new_config = self._build_config(config)
             return new_config
-        except ValueError as e:
-            print(f"WARNING: Invalid Json format ---> Use DEFAULT_CONFIG")
+        except ValueError:
+            print("WARNING: Invalid Json format ---> Use DEFAULT_CONFIG")
             return DEFAULT_CONFIG

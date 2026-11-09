@@ -65,7 +65,8 @@ class GameRules:
             return
         self.time_left = max(0.0, self.time_left - frame_time)
         if self.edible_time_left > 0:
-            self.edible_time_left = max(0.0, self.edible_time_left - frame_time)
+            self.edible_time_left = max(
+                0.0, self.edible_time_left - frame_time)
             if self.edible_time_left == 0:
                 for ghost in ghosts:
                     ghost.edible = False
