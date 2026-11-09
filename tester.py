@@ -618,6 +618,10 @@ def run():
                         engine.pause_game()
                         paused = not paused
 
+                    if snap.state == State.PAUSED:
+                        engine.pause_game()
+                        paused = not paused
+
                 elif not paused and event.key in (
                     pygame.K_1, pygame.K_2, pygame.K_3,
                     pygame.K_4, pygame.K_5
