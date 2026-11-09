@@ -72,6 +72,22 @@ class GameEngine:
         elif action == "end_game":
             self.rules.score = 133333333333337
             self.rules.status = State.VICTORY
+        elif action == "stop_cheat":
+            corners = [
+            (0, 0),
+            (self.level.width - 1, 0),
+            (0, self.level.height - 1),
+            (self.level.width - 1, self.level.height - 1),
+            ]
+            self.player.walk_through_walls = False
+            restore = set()
+            for pac_gums in self.level.super_pacgums:
+                if pac_gums not in corners:
+                    self.level.pacgums.add(pac_gums)
+                else:
+                    restore.add(pac_gums)
+            self.level.super_pacgums = restore
+            self.rules.invincible = False
 
     def submit_name(self, raw_name):
         return self.highscores.submit(raw_name, self.rules.score)

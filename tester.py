@@ -621,7 +621,7 @@ def run():
 
                 elif not paused and event.key in (
                     pygame.K_1, pygame.K_2, pygame.K_3,
-                    pygame.K_4, pygame.K_5
+                    pygame.K_4, pygame.K_5, pygame.K_6
                 ):
                     cheats = {
                         pygame.K_1: "skip_level",
@@ -629,6 +629,7 @@ def run():
                         pygame.K_3: "all_super",
                         pygame.K_4: "invincible",
                         pygame.K_5: "end_game",
+                        pygame.K_6: "stop_cheat"
                     }
                     engine.cheat(cheats[event.key])
 
