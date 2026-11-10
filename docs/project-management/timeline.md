@@ -16,5 +16,5 @@ Project period: 15-10-2026 to 14-11-2026
 - The ghost AI was designed around fixed targeting behaviors for each ghost, rather than the random movement first considered. Random movement was dropped, and each ghost follows its own target rule.
 - The highscore store was written and reviewed after the engine was started, so the order changed.
 - Gameplay fixes (timing, respawn, edible expiry, grace period, level advance) came after integration testing, not before.
-- Frontend integration is ongoing with sreja.
+- Frontend integration was implemented on 2026-11-10: all screens, input, snapshot rendering and score entry are wired to the engine. Automated integration checks and rendered UI inspection cover the frontend; interactive target-display checks remain.
 - Packaging and the documents are at the end, as planned.

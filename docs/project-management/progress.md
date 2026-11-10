@@ -25,6 +25,11 @@
 - What was tested: each fix by running the game, and the headless tester after each change.
 - What is next: finish the frontend integration with sreja, then the README and packaging.
 
+## 2026-11-10
+- What was done: replaced the launcher's temporary tester with the complete Pygame frontend. Added the arcade menu, snapshot-based maze/HUD, keyboard and mouse input, focus-loss pause, pause menu, instructions, top-10 screen, game-over/victory name entry, and animated sprites. Added stable config/data paths, atomic score saving with visible errors, PyInstaller packaging, and a README with run/build instructions.
+- What was tested: SDL-headless integration checks against the real engine, rendered screen inspection, frontend lint/type checks, and standalone build verification from a copied app outside the repository. Detailed checks are in test-plan.md.
+- What is next: interactive playtesting on the target display, target-OS builds for any additional platforms, and the MLX-equivalence review required by the subject.
+
 ## 2026-11-14
 - What was done: wrote the project management documents.
 - What was tested: the documents against the subject's list of examples.

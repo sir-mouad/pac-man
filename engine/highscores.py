@@ -1,5 +1,9 @@
 import json
+from contextlib import suppress
+import os
+from pathlib import Path
 import re
+import tempfile
 
 
 MAX_SCORES = 10
@@ -8,8 +12,9 @@ MAX_NAME_LENGTH = 10
 
 class Highscores:
     def __init__(self, path):
-        self.path = path
+        self.path = Path(path)
         self.scores = []
+        self.last_error = ""
         self.is_load = False
         self.load()
 
@@ -29,11 +34,27 @@ class Highscores:
         self._validate_data(data)
 
     def save(self):
+        temporary = None
         try:
-            with open(self.path, "w") as f:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile(
+                    mode="w", encoding="utf-8", dir=self.path.parent,
+                    prefix=".highscores-", suffix=".tmp", delete=False) as f:
+                temporary = Path(f.name)
                 json.dump({"highscores": self.scores}, f, indent=4)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(temporary, self.path)
         except OSError as e:
             print(f"WARNING: cannot save highscores ({e})")
+            self.last_error = "Couldn't save your score. Check folder permissions."
+            return False
+        finally:
+            if temporary is not None:
+                with suppress(OSError):
+                    temporary.unlink(missing_ok=True)
+        self.last_error = ""
+        return True
 
     def top(self, n=MAX_SCORES):
         return [dict(entry) for entry in self.scores[:n]]
@@ -48,11 +69,16 @@ class Highscores:
         self._sort_and_trim(self.scores)
 
     def submit(self, name, score):
+        self.last_error = ""
         clean_name = self._validate_name(name)
         if clean_name is None:
+            self.last_error = "Use 1-10 letters, numbers or spaces."
             return False
+        previous = list(self.scores)
         self.add(clean_name, score)
-        self.save()
+        if not self.save():
+            self.scores = previous
+            return False
         return True
 
     def _validate_name(self, name):

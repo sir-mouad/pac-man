@@ -9,10 +9,11 @@ from engine.shared import State, GameSnapshot, GhostView
 
 
 class GameEngine:
-    def __init__(self):
+    def __init__(self, config_path=None, highscore_path=None):
         self.parser = Parser()
-        self.config = self.parser.get_config()
-        self.highscores = Highscores(self.config["highscore_filename"])
+        self.config = self.parser.get_config(config_path)
+        self.highscores = Highscores(
+            highscore_path or self.config["highscore_filename"])
         self.adapter = MazeAdapter(self.config)
         self.rules = GameRules(self.config)
         self.ai = GhostAI()

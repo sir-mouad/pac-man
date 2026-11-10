@@ -1,20 +1,29 @@
-ARG=config.json
+ARG=
+
+.PHONY: install run debug test build check-build clean lint
 
 install:
 	uv sync
 
 run:
-	uv run python -m pac-man $(ARG)
+	uv run python pac-man.py $(if $(ARG),"$(ARG)")
 
 debug:
-	uv run python -m pdb pac-man $(ARG)
+	uv run python -m pdb pac-man.py $(if $(ARG),"$(ARG)")
+
+test:
+	SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy uv run python -m unittest discover -s tests -v
+
+build:
+	uv run --group build python scripts/build.py
+
+check-build:
+	uv run python scripts/check_build.py
 
 clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	rm -rf .mypy_cache
+	find . -type d -name "__pycache__" -not -path './.venv/*' -exec rm -rf {} +
+	rm -rf .mypy_cache build
 
 lint:
-	flake8 . --exclude .venv
-	mypy . --warn-return-any \
-	--warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs \
-	--check-untyped-defs
+	uv run flake8 frontend tests scripts pac-man.py --max-line-length=88
+	uv run mypy frontend --follow-imports=silent --ignore-missing-imports

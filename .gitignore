@@ -3,3 +3,7 @@ __pycache__/
 .venv/
 .mypy_cache/
 highscores.json
+build/
+dist/
+.uv-cache/
+.ruff_cache/

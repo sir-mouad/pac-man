@@ -1,7 +1,7 @@
 [project]
 name = "pac-man"
 version = "0.1.0"
-description = "Add your description here"
+description = "A polished Pygame Pac-Man arcade with a snapshot-driven frontend"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -10,3 +10,6 @@ dependencies = [
     "mypy>=2.4.1",
     "pygame>=2.6.1",
 ]
+
+[dependency-groups]
+build = ["pyinstaller>=6.16,<7"]

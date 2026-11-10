@@ -74,9 +74,10 @@ class Parser:
                 new_config[ARG] = VALUE
         return new_config
 
-    def get_config(self):
+    def get_config(self, config_path=None):
         try:
-            config_path = sys.argv[1]
+            if config_path is None:
+                config_path = sys.argv[1] if len(sys.argv) > 1 else 'config.json'
             config = self._read_config(config_path)
             new_config = self._build_config(config)
             return new_config
