@@ -1,6 +1,11 @@
 # Pac-Man settings
+# Invalid format or values use the defaults.
+# Extra value ignored
+# Game work in any case such if the file is missing
+# Unknown keys are ignored.
 {
   "highscore_filename": "highscores.json",
+  #level example ---> [{"width": 20, "height": 15}]
   "levels": [],
   "lives": 5,
   "points_per_pacgum": 10,

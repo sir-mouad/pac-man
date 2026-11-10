@@ -1,6 +1,5 @@
-ARG=
+ARG=config.json
 
-.PHONY: install run debug test build check-build clean lint
 
 install:
 	uv sync

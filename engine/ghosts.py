@@ -1,5 +1,5 @@
 from engine.shared import Direction
-
+from collections import deque
 REVERSE = {
     Direction.UP: Direction.DOWN,
     Direction.DOWN: Direction.UP,
@@ -151,6 +151,28 @@ class GhostAI:
 
         return open_directions
 
+    def _path_steps(self, level, start, target):
+        if start == target:
+            return 0
+        sides = {(0, -1): 0, (1, 0): 1, (0, 1): 2, (-1, 0): 3}
+        queue = deque([(start, 0)])
+        visited = {start}
+        while queue:
+            (cx, cy), steps = queue.popleft()
+            for (dx, dy), side in sides.items():
+                nx, ny = cx + dx, cy + dy
+                if not (0 <= nx < level.width and 0 <= ny < level.height):
+                    continue
+                if (nx, ny) in visited:
+                    continue
+                if level.walls[cy][cx][side]:
+                    continue
+                if (nx, ny) == target:
+                    return steps + 1
+                visited.add((nx, ny))
+                queue.append(((nx, ny), steps + 1))
+        return 10**10
+
     def _best_direction(self, level, ghost, target, open_directions):
         if not open_directions:
             return None
@@ -164,9 +186,8 @@ class GhostAI:
                 choices.remove(back)
 
         x, y = ghost.position
-        tx, ty = target
         best = None
-        best_distance = None
+        best_steps = None
         for direction in choices:
             if direction is Direction.UP:
                 nx, ny = x, y - 1
@@ -176,10 +197,10 @@ class GhostAI:
                 nx, ny = x, y + 1
             if direction is Direction.LEFT:
                 nx, ny = x - 1, y
-            distance = (nx - tx) ** 2 + (ny - ty) ** 2
-            if best_distance is None or distance < best_distance:
+            steps = self._path_steps(level, (nx, ny), target)
+            if best_steps is None or steps < best_steps:
                 best = direction
-                best_distance = distance
+                best_steps = steps
         return best
 
     def start_respawn(self, ghost):
