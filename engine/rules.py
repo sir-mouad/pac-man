@@ -45,8 +45,9 @@ class GameRules:
             if not self.level_number == 10:
                 self.edible_time_left = self.edible_duration
                 for ghost in ghosts:
+                    if not ghost.edible:
+                        ghost.seconds_per_cell = ghost.seconds_per_cell * 2
                     ghost.edible = True
-                    ghost.seconds_per_cell = ghost.seconds_per_cell * 2
 
     def check_ghost_contact(self, player, ghosts, met):
         if self.invincible:
