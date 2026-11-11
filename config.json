@@ -7,7 +7,7 @@
   "highscore_filename": "highscores.json",
   #level example ---> [{"width": 20, "height": 15}]
   "levels": [],
-  "lives": 5,
+  "lives": 10,
   "points_per_pacgum": 10,
   "points_per_super_pacgum": 50,
   "points_per_ghost": 200,

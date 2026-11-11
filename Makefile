@@ -5,10 +5,10 @@ install:
 	uv sync
 
 run:
-	uv run python pac-man.py $(if $(ARG),"$(ARG)")
+	uv run python pac-man.py $(ARG)
 
 debug:
-	uv run python -m pdb pac-man.py $(if $(ARG),"$(ARG)")
+	uv run python -m pdb pac-man.py $(ARG)
 
 test:
 	SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy uv run python -m unittest discover -s tests -v

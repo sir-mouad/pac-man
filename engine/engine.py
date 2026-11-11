@@ -36,6 +36,8 @@ class GameEngine:
     def update(self, frame_time):
         if self.rules.status is not State.PLAYING:
             return
+        player_before = self.player.position
+        ghosts_before = [g.position for g in self.ghosts]
         self.player.step(self.level, frame_time)
         if self.player.direction is not None:
             self.ai.update(self.level, self.player, self.ghosts, frame_time)
@@ -43,16 +45,21 @@ class GameEngine:
         for g in self.ghosts:
             g.step(self.level, frame_time)
         eaten = []
-        for g in self.ghosts:
-            if g.edible and g.position == self.player.position and \
-                    g.protected_time == 0:
-                eaten.append(g)
+        met = {
+            id(g) for g, before in zip(self.ghosts, ghosts_before)
+            if g.position == self.player.position
+            or (before == self.player.position
+                and g.position == player_before)
+        }
+        eaten = [g for g in self.ghosts
+                 if id(g) in met and g.edible and g.protected_time == 0]
         self._handle_eaten_ghosts(eaten)
+        met -= {id(g) for g in eaten}
         self.rules.collect_items(self.level, self.player, self.ghosts)
         for g in self.ghosts:
             if g.protected_time > 0:
                 g.protected_time = max(0.0, g.protected_time - frame_time)
-        self.rules.check_ghost_contact(self.player, self.ghosts)
+        self.rules.check_ghost_contact(self.player, self.ghosts, met)
         self.rules.check_end(self.level)
         if not self.level.pacgums and not self.level.super_pacgums:
             if not self.rules.is_last_level():
@@ -101,14 +108,15 @@ class GameEngine:
                                      time_left=self.rules.time_left,
                                      player=self.player.position,
                                      player_direction=self.player.direction,
-                                     ghosts=[GhostView(g.position, g.edible)
+                                     ghosts=[GhostView(g.position, g.edible, g.seconds_per_cell)
                                              for g in self.ghosts],
                                      walls=self.level.walls,
                                      pacgums=set(self.level.pacgums),
                                      super_pacgums=set(
                                          self.level.super_pacgums),
                                      width=self.level.width,
-                                     height=self.level.height)
+                                     height=self.level.height
+                                     )
         return game_snapshot
 
     def _start_level(self, index):
@@ -121,7 +129,7 @@ class GameEngine:
     def _create_ghosts(self, level):
         ghosts = []
         for corner in level.ghost_starts:
-            ghosts.append(Ghost(corner))
+            ghosts.append(Ghost(corner, self.rules.level_number))
         ghosts[0].behavior = BlinkyBehavior()
         ghosts[1].behavior = PinkyBehavior()
         ghosts[2].behavior = InkyBehavior()

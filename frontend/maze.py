@@ -21,16 +21,16 @@ class MazeRenderer:
         self.motion_key: tuple | None = None
         self.motion: dict[str, tuple[tuple, tuple, float]] = {}
 
-    def position(self, name: str, target: tuple, phase: float) -> tuple:
-        """Ease toward observed cells; never predict or change engine positions."""
+    def position(self, name: str, target: tuple, phase: float,
+                duration: float) -> tuple:
         if name not in self.motion:
             self.motion[name] = (target, target, phase)
         start, end, began = self.motion[name]
-        amount = max(0, min(1, (phase - began) / .12))
+        amount = max(0, min(1, (phase - began) / duration))
         current = tuple(a + (b - a) * amount for a, b in zip(start, end))
         if end != target:
             if abs(end[0] - target[0]) + abs(end[1] - target[1]) != 1:
-                current = target  # Respawns and level changes do not slide.
+                current = target  # respawns and level changes don't slide
             self.motion[name] = (current, target, phase)
         return current
 
@@ -64,10 +64,11 @@ class MazeRenderer:
             pygame.draw.circle(canvas, (46, 63, 61), center(pos), radius + 4)
             pygame.draw.circle(canvas, WHITE, center(pos), radius)
         for i, ghost in enumerate(snap.ghosts):
-            pos = self.position(f"ghost{i}", ghost.position, phase)
+            pos = self.position(f"ghost{i}", ghost.position, phase,
+                                ghost.seconds_per_cell)
             self.painter.ghost(center(pos), cell * .31,
                                GHOSTS[i % 4], ghost.edible, phase)
-        player = self.position("player", snap.player, phase)
+        player = self.position("player", snap.player, phase, .12)
         self.painter.pacman(center(player), cell * .34,
                             ANGLES.get(snap.player_direction, 0), phase)
         return bounds

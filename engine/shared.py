@@ -45,3 +45,4 @@ class GameSnapshot:
 class GhostView:
     position: tuple[int, int]
     edible: bool
+    seconds_per_cell: int

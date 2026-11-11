@@ -3,11 +3,11 @@ from engine.shared import Direction
 
 
 class Mover:
-    def __init__(self, position, direction=None, move_interval=0.15):
+    def __init__(self, position, direction=None, seconds_per_cell=0.15):
         self.position = position
         self.direction = direction
         self.requested_direction = None
-        self.move_interval = move_interval
+        self.seconds_per_cell = seconds_per_cell
         self.move_timer = 0.0
         self.protected_time = 0.0
 
@@ -37,10 +37,10 @@ class Mover:
     def step(self, level, frame_time):
         self.move_timer += frame_time
 
-        if self.move_timer < self.move_interval:
+        if self.move_timer < self.seconds_per_cell:
             return
 
-        self.move_timer -= self.move_interval
+        self.move_timer -= self.seconds_per_cell
 
         if self.requested_direction is not None:
             if self.can_move(level, self.requested_direction):
@@ -72,7 +72,7 @@ class Mover:
 
 class Player(Mover):
     def __init__(self, start):
-        super().__init__(start, direction=None, move_interval=0.15)
+        super().__init__(start, direction=None, seconds_per_cell=0.15)
         self.start = start
         self.walk_through_walls = False
 
@@ -84,9 +84,10 @@ class Player(Mover):
 
 
 class Ghost(Mover):
-    def __init__(self, corner):
-        super().__init__(corner, direction=None, move_interval=0.25)
+    def __init__(self, corner, level_number):
+        super().__init__(corner, direction=None, seconds_per_cell=0.25)
         self.corner = corner
+        self.level_number = level_number
         self.edible = False
 
     def respawn(self):
@@ -95,3 +96,4 @@ class Ghost(Mover):
         self.requested_direction = None
         self.move_timer = 0.0
         self.edible = False
+        self.seconds_per_cell =  0.30 - (self.level_number - 1) * 0.01

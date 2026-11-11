@@ -42,15 +42,17 @@ class GameRules:
         if cell in level.super_pacgums:
             level.super_pacgums.remove(cell)
             self.score += self.points_per_super_pacgum
-            self.edible_time_left = self.edible_duration
-            for ghost in ghosts:
-                ghost.edible = True
+            if not self.level_number == 10:
+                self.edible_time_left = self.edible_duration
+                for ghost in ghosts:
+                    ghost.edible = True
+                    ghost.seconds_per_cell = ghost.seconds_per_cell * 2
 
-    def check_ghost_contact(self, player, ghosts):
+    def check_ghost_contact(self, player, ghosts, met):
         if self.invincible:
             return
         for ghost in ghosts:
-            if ghost.position != player.position:
+            if id(ghost) not in met:
                 continue
             if ghost.edible:
                 self.eat_ghost(ghost)
@@ -70,6 +72,7 @@ class GameRules:
             if self.edible_time_left == 0:
                 for ghost in ghosts:
                     ghost.edible = False
+                    ghost.seconds_per_cell = 0.30 - (ghost.level_number - 1) * 0.01
 
     def check_end(self, level):
         if self.lives <= 0:

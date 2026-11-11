@@ -4,7 +4,7 @@ from pathlib import Path
 
 DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
                   'levels': [{'width': 20, 'height': 15} for _ in range(10)],
-                  'lives': 5,
+                  'lives': 10,
                   'points_per_pacgum': 10,
                   'points_per_super_pacgum': 50,
                   'points_per_ghost': 200,
