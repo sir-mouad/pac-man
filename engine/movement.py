@@ -34,8 +34,8 @@ class Mover:
 
         return False
 
-    def step(self, level, dt):
-        self.move_timer += dt
+    def step(self, level, frame_time):
+        self.move_timer += frame_time
 
         if self.move_timer < self.move_interval:
             return

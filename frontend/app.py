@@ -8,7 +8,7 @@ import re
 import pygame
 
 from engine.engine import GameEngine
-from engine.shared import Direction, State
+from engine.shared import Direction, State, Cheat
 from frontend.maze import MazeRenderer
 from frontend.theme import (
     GHOSTS, INK, LINE, MUTED, RAISED, RED, SIZE, SURFACE, TEAL, WHITE,
@@ -23,6 +23,15 @@ KEY_DIRECTIONS = {
     pygame.K_DOWN: Direction.DOWN, pygame.K_s: Direction.DOWN,
     pygame.K_LEFT: Direction.LEFT, pygame.K_a: Direction.LEFT,
     pygame.K_RIGHT: Direction.RIGHT, pygame.K_d: Direction.RIGHT,
+}
+
+KEY_CHEAT = {
+    pygame.K_1: Cheat.SKIP,
+    pygame.K_2: Cheat.NOCLIP,
+    pygame.K_3: Cheat.SUPER,
+    pygame.K_4: Cheat.Immortal,
+    pygame.K_5: Cheat.AutoWin,
+    pygame.K_6: Cheat.Reset
 }
 
 
@@ -167,6 +176,8 @@ class Application:
                 self.engine.set_direction(KEY_DIRECTIONS[key])
             elif key in (pygame.K_p, pygame.K_ESCAPE):
                 self.pause()
+            elif key in KEY_CHEAT:
+                self.engine.cheat(KEY_CHEAT[key])
             return
         if self.screen is Screen.RESULT:
             if key == pygame.K_BACKSPACE:
@@ -285,7 +296,8 @@ class Application:
 
     def draw_game(self) -> None:
         snap = self.snapshot
-        self.header("IN THE MAZE" if self.screen is Screen.PLAYING else "PAUSED")
+        self.header(
+            "IN THE MAZE" if self.screen is Screen.PLAYING else "PAUSED")
         self.p.label(f"LEVEL {snap.level:02d}", (42, 118), TEAL)
         self.p.text("Make every", (40, 154), 44)
         self.p.text("dot count.", (40, 194), 44, YELLOW)
@@ -398,7 +410,8 @@ class Application:
             self.p.text(line, (449, 565 + i * 32), 24, MUTED)
         self.button((80, 713, 300, 50), "Back to main menu", "menu")
         self.button((916, 713, 284, 50), "Let's play", "start", True)
-        self.footer("ARROWS / WASD   MOVE       P / ESC   PAUSE       ENTER   CONFIRM")
+        self.footer(
+            "ARROWS / WASD   MOVE       P / ESC   PAUSE       ENTER   CONFIRM")
 
     def draw_result(self) -> None:
         victory = self.snapshot.state is State.VICTORY
@@ -429,7 +442,8 @@ class Application:
         self.button((358, 626, 564, 54), "Save score & return", "save", True)
         self.p.text("ESC to return without saving", (640, 707), 20,
                     MUTED, "center")
-        self.footer("ENTER   SAVE SCORE       BACKSPACE   EDIT       ESC   SKIP")
+        self.footer(
+            "ENTER   SAVE SCORE       BACKSPACE   EDIT       ESC   SKIP")
 
     def draw(self) -> None:
         self.buttons = []

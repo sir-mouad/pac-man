@@ -15,6 +15,14 @@ class State(Enum):
     GAME_OVER = 3
     VICTORY = 4
 
+class Cheat(Enum):
+    SKIP = 1
+    NOCLIP = 2
+    SUPER = 3
+    Immortal = 4
+    AutoWin = 5
+    Reset = 6
+
 
 @dataclass
 class GameSnapshot:

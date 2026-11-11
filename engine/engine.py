@@ -5,7 +5,7 @@ from engine.rules import GameRules
 from engine.ghosts import GhostAI, BlinkyBehavior, PinkyBehavior, \
     InkyBehavior, ClydeBehavior
 from engine.movement import Player, Ghost
-from engine.shared import State, GameSnapshot, GhostView
+from engine.shared import State, GameSnapshot, GhostView, Cheat
 
 
 class GameEngine:
@@ -41,9 +41,9 @@ class GameEngine:
         self.player.step(self.level, frame_time)
         if self.player.direction is not None:
             self.ai.update(self.level, self.player, self.ghosts, frame_time)
-            for g in self.ghosts:
-                g.step(self.level, frame_time)
             self.rules.updtae_times(frame_time, self.ghosts)
+        for g in self.ghosts:
+            g.step(self.level, frame_time)
         eaten = []
         for g in self.ghosts:
             if g.edible and g.position == self.player.position and \
@@ -62,20 +62,20 @@ class GameEngine:
                 self._start_level(self.rules.level_number)
 
     def cheat(self, action):
-        if action == "skip_level":
+        if action is Cheat.SKIP:
             self.level.pacgums.clear()
             self.level.super_pacgums.clear()
-        elif action == "walk_through_walls":
+        elif action is Cheat.NOCLIP:
             self.player.walk_through_walls = True
-        elif action == "all_super":
+        elif action is Cheat.SUPER:
             self.level.super_pacgums |= self.level.pacgums
             self.level.pacgums.clear()
-        elif action == "invincible":
+        elif action is Cheat.Immortal:
             self.rules.invincible = True
-        elif action == "end_game":
+        elif action is Cheat.AutoWin:
             self.rules.score = 133333333333337
             self.rules.status = State.VICTORY
-        elif action == "stop_cheat":
+        elif action is Cheat.Reset:
             corners = [
                 (0, 0),
                 (self.level.width - 1, 0),
