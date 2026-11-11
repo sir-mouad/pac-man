@@ -28,7 +28,7 @@ def main() -> None:
     config_path = args.config.resolve() if args.config else default_config()
     config = Parser().get_config(config_path)
     highscores = score_path(config["highscore_filename"], args.config)
-    app = Application(GameEngine(config_path, highscores))
+    app = Application(GameEngine(config, highscores))
     if args.smoke_test:
         app.start()
         app.update(1 / 60)

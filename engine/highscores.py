@@ -1,20 +1,11 @@
 import json
-from contextlib import suppress
-import os
-from pathlib import Path
 import re
-import tempfile
-
-
-MAX_SCORES = 10
-MAX_NAME_LENGTH = 10
 
 
 class Highscores:
     def __init__(self, path):
-        self.path = Path(path)
+        self.path = path
         self.scores = []
-        self.last_error = ""
         self.is_load = False
         self.load()
 
@@ -34,33 +25,19 @@ class Highscores:
         self._validate_data(data)
 
     def save(self):
-        temporary = None
         try:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            with tempfile.NamedTemporaryFile(
-                    mode="w", encoding="utf-8", dir=self.path.parent,
-                    prefix=".highscores-", suffix=".tmp", delete=False) as f:
-                temporary = Path(f.name)
+            with open(self.path, "w") as f:
                 json.dump({"highscores": self.scores}, f, indent=4)
-                f.flush()
-                os.fsync(f.fileno())
-            os.replace(temporary, self.path)
+        except PermissionError as e:
+            print(f"WARNING: Whoever set the permissions to 000, what were you thinking? 😑😑😑  ({e}")
         except OSError as e:
             print(f"WARNING: cannot save highscores ({e})")
-            self.last_error = "Couldn't save your score. Check folder permissions."
-            return False
-        finally:
-            if temporary is not None:
-                with suppress(OSError):
-                    temporary.unlink(missing_ok=True)
-        self.last_error = ""
-        return True
 
-    def top(self, n=MAX_SCORES):
+    def top(self, n=10):
         return [dict(entry) for entry in self.scores[:n]]
 
     def qualifies(self, score):
-        if len(self.scores) < MAX_SCORES:
+        if len(self.scores) < 10:
             return True
         return score > self.scores[-1]["score"]
 
@@ -69,16 +46,11 @@ class Highscores:
         self._sort_and_trim(self.scores)
 
     def submit(self, name, score):
-        self.last_error = ""
         clean_name = self._validate_name(name)
         if clean_name is None:
-            self.last_error = "Use 1-10 letters, numbers or spaces."
             return False
-        previous = list(self.scores)
         self.add(clean_name, score)
-        if not self.save():
-            self.scores = previous
-            return False
+        self.save()
         return True
 
     def _validate_name(self, name):
@@ -102,7 +74,7 @@ class Highscores:
 
     def _sort_and_trim(self, scores):
         self.scores = sorted(
-            scores, key=lambda x: x["score"], reverse=True)[:MAX_SCORES]
+            scores, key=lambda x: x["score"], reverse=True)[:10]
 
     def _validate_data(self, data):
         try:

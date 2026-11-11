@@ -1,4 +1,3 @@
-from engine.parser import Parser
 from engine.highscores import Highscores
 from engine.maze_adapter import MazeAdapter
 from engine.rules import GameRules
@@ -9,9 +8,8 @@ from engine.shared import State, GameSnapshot, GhostView, Cheat
 
 
 class GameEngine:
-    def __init__(self, config_path=None, highscore_path=None):
-        self.parser = Parser()
-        self.config = self.parser.get_config(config_path)
+    def __init__(self, config, highscore_path=None):
+        self.config = config
         self.highscores = Highscores(
             highscore_path or self.config["highscore_filename"])
         self.adapter = MazeAdapter(self.config)
