@@ -97,5 +97,9 @@ class Ghost(Mover):
         self.requested_direction = None
         self.move_timer = 0.0
         self.edible = False
-        self.seconds_per_cell = self.first_seconds - \
-            (self.level_number - 1) * 0.01
+        if self.level_number <= 7:
+            self.seconds_per_cell = self.first_seconds - \
+                (self.level_number - 1) * 0.01
+        else:
+            self.seconds_per_cell = self.first_seconds - \
+                (self.level_number - 1) * 0.02   
