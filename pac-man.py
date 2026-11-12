@@ -6,9 +6,9 @@ from pathlib import Path
 
 os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
 
-from engine.engine import GameEngine  # noqa: E402
-from engine.parser import Parser  # noqa: E402
-from frontend.paths import default_config, score_path  # noqa: E402
+from engine.engine import GameEngine
+from engine.parser import Parser
+from frontend.paths import default_config, score_path
 
 
 def main() -> None:

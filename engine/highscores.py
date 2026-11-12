@@ -29,7 +29,8 @@ class Highscores:
             with open(self.path, "w") as f:
                 json.dump({"highscores": self.scores}, f, indent=4)
         except PermissionError as e:
-            print(f"WARNING: Whoever set the permissions to 000, what were you thinking? 😑😑😑  ({e}")
+            print("WARNING: Whoever set the permissions to 000, ")
+            (f"what were you thinking? 😑😑😑  ({e}")
         except OSError as e:
             print(f"WARNING: cannot save highscores ({e})")
 

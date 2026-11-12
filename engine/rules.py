@@ -42,7 +42,7 @@ class GameRules:
         if cell in level.super_pacgums:
             level.super_pacgums.remove(cell)
             self.score += self.points_per_super_pacgum
-            if not self.level_number == 10:
+            if  self.level_number <= 10:
                 self.edible_time_left = self.edible_duration
                 for ghost in ghosts:
                     if not ghost.edible:
@@ -73,7 +73,8 @@ class GameRules:
             if self.edible_time_left == 0:
                 for ghost in ghosts:
                     ghost.edible = False
-                    ghost.seconds_per_cell = 0.30 - (ghost.level_number - 1) * 0.01
+                    ghost.seconds_per_cell = ghost.first_seconds - \
+                        (ghost.level_number - 1) * 0.01
 
     def check_end(self, level):
         if self.lives <= 0:

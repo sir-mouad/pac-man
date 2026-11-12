@@ -15,6 +15,7 @@ class State(Enum):
     GAME_OVER = 3
     VICTORY = 4
 
+
 class Cheat(Enum):
     SKIP = 1
     NOCLIP = 2

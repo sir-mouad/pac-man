@@ -3,7 +3,7 @@ import commentjson
 from pathlib import Path
 
 DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
-                  'levels': [{'width': 20, 'height': 15} for _ in range(10)],
+                  'levels': [{'width': 20, 'height': 15} for _ in range(11)],
                   'lives': 10,
                   'points_per_pacgum': 10,
                   'points_per_super_pacgum': 50,
@@ -31,7 +31,8 @@ class Parser:
                 int(values)
                 return True
             if arg == 'highscore_filename':
-                if Path(values).suffix == ".json" and len(values) >=5:
+                if Path(values).suffix == ".json" \
+                        and len(values) >= 5:
                     return True
                 else:
                     raise ValueError
@@ -57,7 +58,7 @@ class Parser:
                 if self._check_arg(arg, value):
                     if arg == 'levels' and len(value) < 10:
                         value.extend(
-                            DEFAULT_CONFIG['levels'][:(10-len(value))])
+                            DEFAULT_CONFIG['levels'][:(11-len(value))])
                     if arg in ('lives', 'points_per_pacgum',
                                'points_per_super_pacgum', 'points_per_ghost',
                                'level_max_time', 'seed'):
@@ -77,7 +78,8 @@ class Parser:
     def get_config(self, config_path=None):
         try:
             if config_path is None:
-                config_path = sys.argv[1] if len(sys.argv) > 1 else 'config.json'
+                config_path = sys.argv[1] if len(
+                    sys.argv) > 1 else 'config.json'
             config = self._read_config(config_path)
             new_config = self._build_config(config)
             return new_config

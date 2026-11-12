@@ -108,7 +108,8 @@ class GameEngine:
                                      time_left=self.rules.time_left,
                                      player=self.player.position,
                                      player_direction=self.player.direction,
-                                     ghosts=[GhostView(g.position, g.edible, g.seconds_per_cell)
+                                     ghosts=[GhostView(g.position, g.edible,
+                                                       g.seconds_per_cell)
                                              for g in self.ghosts],
                                      walls=self.level.walls,
                                      pacgums=set(self.level.pacgums),
@@ -140,4 +141,4 @@ class GameEngine:
         for ghost in eaten:
             self.rules.eat_ghost(ghost)
             self.ai.start_respawn(ghost)
-            ghost.protected_time = 3.0
+            ghost.protected_time = 5.0

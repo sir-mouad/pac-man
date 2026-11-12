@@ -3,7 +3,7 @@ from engine.shared import Direction
 
 
 class Mover:
-    def __init__(self, position, direction=None, seconds_per_cell=0.15):
+    def __init__(self, position, direction=None, seconds_per_cell=None):
         self.position = position
         self.direction = direction
         self.requested_direction = None
@@ -85,9 +85,10 @@ class Player(Mover):
 
 class Ghost(Mover):
     def __init__(self, corner, level_number):
-        super().__init__(corner, direction=None, seconds_per_cell=0.25)
+        super().__init__(corner, direction=None, seconds_per_cell=0.45)
         self.corner = corner
         self.level_number = level_number
+        self.first_seconds = self.seconds_per_cell
         self.edible = False
 
     def respawn(self):
@@ -96,4 +97,5 @@ class Ghost(Mover):
         self.requested_direction = None
         self.move_timer = 0.0
         self.edible = False
-        self.seconds_per_cell =  0.30 - (self.level_number - 1) * 0.01
+        self.seconds_per_cell = self.first_seconds - \
+            (self.level_number - 1) * 0.01

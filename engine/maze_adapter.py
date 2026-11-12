@@ -26,7 +26,8 @@ class MazeAdapter():
         try:
             maze = MazeGenerator(size, perfect=False, seed=seed)
         except Exception as e:
-            print(f"Error: level {index} is too large for the maze package ({e})")
+            print(f"Error: level {index} is too large for the ")
+            (f"maze package ({e})")
             exit(1)
         walls = self._decode_walls(maze.maze)
         level = Level(width=size[0], height=size[1], walls=walls)
@@ -112,13 +113,3 @@ class MazeAdapter():
                     return nx, ny
                 queue.append((nx, ny))
         return x, y
-
-
-if __name__ == "__main__":
-    parse = Parser()
-    config = parse.get_config()
-    maze_adapter = MazeAdapter(config)
-    level = maze_adapter.generate_level(2)
-    print(level.player_start)
-    print(level.ghost_starts)
-    print(level.super_pacgums)
