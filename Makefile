@@ -12,8 +12,6 @@ install:
 		echo "mazegenerator already exists"; \
 	fi
 
-	
-
 run:
 	uv run python pac-man.py $(ARG)
 
@@ -25,7 +23,7 @@ build:
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
-	rm -rf .mypy_cache build dist pac-man.zip pac-man.spec
+	rm -rf .mypy_cache
 
 lint:
 	flake8 . --exclude .venv

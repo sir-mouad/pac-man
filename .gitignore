@@ -3,5 +3,6 @@ __pycache__/
 .venv/
 .mypy_cache/
 highscores.json
-mazegenerator/build/
+mazegenerator/
+build/
 dist/

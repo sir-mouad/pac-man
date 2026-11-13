@@ -78,11 +78,14 @@ class GameRules:
                 for ghost in ghosts:
                     ghost.edible = False
                     if self.level_number <= 7:
-                        ghost.seconds_per_cell = ghost.first_seconds - \
-                            (ghost.level_number - 1) * 0.01
+                        self.seconds_per_cell = ghost.first_seconds - \
+                            (self.level_number - 1) * 0.01
+                    elif self.level_number <= 11:
+                        self.seconds_per_cell = ghost.first_seconds - \
+                            (self.level_number - 1) * 0.02
                     else:
-                        ghost.seconds_per_cell = ghost.first_seconds - \
-                            (ghost.level_number - 1) * 0.03
+                        self.seconds_per_cell = ghost.first_seconds - \
+                            10 * 0.02
 
     def check_end(self, level):
         if self.lives <= 0:
@@ -107,7 +110,6 @@ class GameRules:
 
     def next_level(self):
         self.level_number += 1
-        self.lives = self.lives
 
     def is_last_level(self):
         return self.level_number >= len(self.config["levels"])

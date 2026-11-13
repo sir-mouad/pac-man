@@ -100,6 +100,9 @@ class Ghost(Mover):
         if self.level_number <= 7:
             self.seconds_per_cell = self.first_seconds - \
                 (self.level_number - 1) * 0.01
+        elif self.level_number <= 11:
+            self.seconds_per_cell = self.first_seconds - \
+                (self.level_number - 1) * 0.02
         else:
             self.seconds_per_cell = self.first_seconds - \
-                (self.level_number - 1) * 0.02   
+                10 * 0.02

@@ -1,6 +1,8 @@
 import sys
 import commentjson
 from pathlib import Path
+from lark.exceptions import UnexpectedToken
+
 
 DEFAULT_CONFIG = {'highscore_filename': 'highscores.json',
                   'levels': [{'width': 20, 'height': 15} for _ in range(11)],
@@ -20,9 +22,13 @@ class Parser:
                 for line in f:
                     if not line.lstrip().startswith("#"):
                         lines.append(line)
+                config = commentjson.loads("".join(lines))
+            return config
+        except UnexpectedToken:
+            print("WARNING: Invlaid Json format ---> USE_DEFAUT_CONFIG")
         except (FileNotFoundError, PermissionError):
-            return DEFAULT_CONFIG
-        return commentjson.loads("".join(lines))
+            print(f"WARNING: Warning: config.json not found ---> USE_DEFAULT_CONFIG")
+        return DEFAULT_CONFIG
 
     def _check_arg(self, arg, values):
         try:
@@ -31,11 +37,7 @@ class Parser:
                 int(values)
                 return True
             if arg == 'highscore_filename':
-                if Path(values).suffix == ".json" \
-                        and len(values) >= 5:
                     return True
-                else:
-                    raise ValueError
             if arg == 'levels':
                 for d in values:
                     for key, value in d.items():
@@ -77,9 +79,6 @@ class Parser:
 
     def get_config(self, config_path=None):
         try:
-            if config_path is None:
-                config_path = sys.argv[1] if len(
-                    sys.argv) > 1 else 'config.json'
             config = self._read_config(config_path)
             new_config = self._build_config(config)
             return new_config
