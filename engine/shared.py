@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 
 class Direction(Enum):
+    """Movement directions on the maze grid."""
     UP = 1
     DOWN = 2
     LEFT = 3
@@ -10,6 +11,7 @@ class Direction(Enum):
 
 
 class State(Enum):
+    """Current status of a game session."""
     PLAYING = 1
     PAUSED = 2
     GAME_OVER = 3
@@ -17,6 +19,7 @@ class State(Enum):
 
 
 class Cheat(Enum):
+    """Cheat actions used for peer review testing."""
     SKIP = 1
     NOCLIP = 2
     SUPER = 3
@@ -27,6 +30,7 @@ class Cheat(Enum):
 
 @dataclass
 class GameSnapshot:
+    """Read-only copy of the game state used for drawing."""
     state: State
     score: int
     lives: int
@@ -44,6 +48,7 @@ class GameSnapshot:
 
 @dataclass
 class GhostView:
+    """Position and state of one ghost, used for drawing."""
     position: tuple[int, int]
     edible: bool
     seconds_per_cell: int

@@ -1,3 +1,5 @@
+from typing import Any
+
 from engine.shared import Direction
 from collections import deque
 REVERSE = {
@@ -9,21 +11,28 @@ REVERSE = {
 
 
 class GhostBehavior:
-    def target(self, level, player, blinky):
+    """Base class for the strategy each ghost uses to pick its target."""
+    def target(  # type: ignore[empty-body]
+            self, level: Any, player: Any, blinky: Any) -> tuple[int, int]:
+        """Return the cell this ghost wants to reach."""
         ...
 
 # (Red)
 
 
 class BlinkyBehavior(GhostBehavior):
-    def target(self, level, player, blinky):
+    """Red ghost: chases the player's exact cell."""
+    def target(self, level: Any, player: Any, blinky: Any) -> Any:
+        """Return the player's current cell."""
         return player.position
 
 # (Pink)
 
 
 class PinkyBehavior(GhostBehavior):
-    def target(self, level, player, blinky):
+    """Pink ghost: aims four cells ahead of the player."""
+    def target(self, level: Any, player: Any, blinky: Any) -> tuple[int, int]:
+        """Return the cell four steps ahead of the player, inside the maze."""
         x, y = player.position
         if player.direction is Direction.UP:
             x, y = x - 4, y - 4
@@ -40,7 +49,9 @@ class PinkyBehavior(GhostBehavior):
 
 # (Cyan / Blue) ---> the only one use blinky positions
 class InkyBehavior(GhostBehavior):
-    def target(self, level, player, blinky):
+    """Cyan ghost: aims using the player's position and Blinky's position."""
+    def target(self, level: Any, player: Any, blinky: Any) -> tuple[int, int]:
+        """Return a target found from the player's and Blinky's positions."""
         px, py = player.position
         x, y = px, py
         if player.direction is Direction.UP:
@@ -62,10 +73,13 @@ class InkyBehavior(GhostBehavior):
 
 
 class ClydeBehavior(GhostBehavior):
-    def __init__(self, ghost):
+    """Orange ghost: chases from far away, retreats when close."""
+    def __init__(self, ghost: Any) -> None:
+        """Store the ghost so the behavior can read its position and corner."""
         self.ghost = ghost
 
-    def target(self, level, player, blinky):
+    def target(self, level: Any, player: Any, blinky: Any) -> Any:
+        """Chase from far away, or retreat to the corner when close."""
         px, py = player.position
         gx, gy = self.ghost.position
         distance = (px - gx) ** 2 + (py - gy) ** 2
@@ -75,11 +89,15 @@ class ClydeBehavior(GhostBehavior):
 
 
 class GhostAI:
-    def __init__(self):
+    """Chooses each ghost's direction and handles respawn delays."""
+    def __init__(self) -> None:
+        """Create the AI with a 3-second respawn delay."""
         self.respawn_delay = 3.0
-        self.waiting = {}
+        self.waiting: dict[Any, float] = {}
 
-    def update(self, level, player, ghosts, frame_time):
+    def update(self, level: Any, player: Any, ghosts: list[Any],
+               frame_time: float) -> None:
+        """Choose a direction for each ghost; count down respawn timers."""
         for ghost in ghosts:
             if ghost in self.waiting:
                 self._update_respawn(ghost, frame_time)
@@ -87,11 +105,13 @@ class GhostAI:
             direction = self._choose_direction(level, player, ghosts, ghost)
             ghost.set_direction(direction)
 
-    def _choose_direction(self, level, player, ghosts, ghost):
+    def _choose_direction(self, level: Any, player: Any, ghosts: list[Any],
+                          ghost: Any) -> Direction | None:
+        """Flee from the player if edible, otherwise chase the target."""
         if ghost.edible:
             return self._flee_direction(level, player, ghost)
         else:
-            blinky = None
+            blinky: Any = None
             for g in ghosts:
                 if isinstance(g.behavior, BlinkyBehavior):
                     blinky = g
@@ -99,11 +119,15 @@ class GhostAI:
             target = ghost.behavior.target(level, player, blinky)
             return self._chase_direction(level, ghost, target)
 
-    def _chase_direction(self, level, ghost, target):
+    def _chase_direction(self, level: Any, ghost: Any,
+                         target: tuple[int, int]) -> Direction | None:
+        """Pick the open direction that gets closest to the target."""
         open_directions = self._open_directions(level, ghost)
         return self._best_direction(level, ghost, target, open_directions)
 
-    def _flee_direction(self, level, player, ghost):
+    def _flee_direction(self, level: Any, player: Any,
+                        ghost: Any) -> Direction | None:
+        """Pick the open direction that gets farthest from the player."""
         open_directions = self._open_directions(level, ghost)
         if not open_directions:
             return None
@@ -118,8 +142,8 @@ class GhostAI:
 
         x, y = ghost.position
         tx, ty = player.position
-        best = None
-        best_distance = None
+        best: Direction | None = None
+        best_distance: int | None = None
         for direction in choices:
             if direction is Direction.UP:
                 nx, ny = x, y - 1
@@ -135,11 +159,12 @@ class GhostAI:
                 best_distance = distance
         return best
 
-    def _open_directions(self, level, ghost):
+    def _open_directions(self, level: Any, ghost: Any) -> list[Direction]:
+        """List the directions the ghost can move without hitting a wall."""
         walls = level.walls
         x, y = ghost.position
         current_cell = walls[y][x]
-        open_directions = []
+        open_directions: list[Direction] = []
         if not current_cell[0]:
             open_directions.append(Direction.UP)
         if not current_cell[1]:
@@ -151,7 +176,9 @@ class GhostAI:
 
         return open_directions
 
-    def _path_steps(self, level, start, target):
+    def _path_steps(self, level: Any, start: tuple[int, int],
+                    target: tuple[int, int]) -> int:
+        """Count the steps from start to target using breadth-first search."""
         if start == target:
             return 0
         sides = {(0, -1): 0, (1, 0): 1, (0, 1): 2, (-1, 0): 3}
@@ -173,7 +200,10 @@ class GhostAI:
                 queue.append(((nx, ny), steps + 1))
         return 10**10
 
-    def _best_direction(self, level, ghost, target, open_directions):
+    def _best_direction(
+            self, level: Any, ghost: Any, target: tuple[int, int],
+            open_directions: list[Direction]) -> Direction | None:
+        """Pick the open direction with the shortest path to the target."""
         if not open_directions:
             return None
         if len(open_directions) == 1:
@@ -186,8 +216,8 @@ class GhostAI:
                 choices.remove(back)
 
         x, y = ghost.position
-        best = None
-        best_steps = None
+        best: Direction | None = None
+        best_steps: int | None = None
         for direction in choices:
             if direction is Direction.UP:
                 nx, ny = x, y - 1
@@ -203,10 +233,12 @@ class GhostAI:
                 best_steps = steps
         return best
 
-    def start_respawn(self, ghost):
+    def start_respawn(self, ghost: Any) -> None:
+        """Start the respawn countdown for an eaten ghost."""
         self.waiting[ghost] = self.respawn_delay
 
-    def _update_respawn(self, ghost, frame_time):
+    def _update_respawn(self, ghost: Any, frame_time: float) -> None:
+        """Count down the respawn timer and respawn the ghost at zero."""
         self.waiting[ghost] -= frame_time
         if self.waiting[ghost] <= 0:
             del self.waiting[ghost]

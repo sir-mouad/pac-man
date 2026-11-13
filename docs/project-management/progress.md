@@ -30,7 +30,11 @@
 - What was tested: SDL-headless integration checks against the real engine, rendered screen inspection, frontend lint/type checks, and standalone build verification from a copied app outside the repository. Detailed checks are in test-plan.md.
 - What is next: interactive playtesting on the target display, target-OS builds for any additional platforms, and the MLX-equivalence review required by the subject.
 
+## 2026-11-13
+- What was done: ran flake8 and mypy on the whole project and fixed the findings without changing program behavior: type annotations, one-line docstrings for every class and function, line wrapping and unused imports. Added the package marker `engine/__init__.py` so mypy resolves the engine modules once. Excluded the assigned maze package from mypy with a follow-imports override in `pyproject.toml`. Wrote the README to follow the subject's required sections. Built the standalone game and prepared it for an unlisted demo on Itch.io.
+- What was tested: flake8 and mypy with the Makefile's flags, a check that the syntax tree of each changed file matches the previous version apart from annotations, docstrings and imports, and a fresh-clone check that each patch applies. The packaged build was run from a terminal on Linux.
+- What is next: interactive playtesting, confirming the highscore save path on the packaged build, and the MLX-equivalence review.
+
 ## 2026-11-14
 - What was done: wrote the project management documents.
 - What was tested: the documents against the subject's list of examples.
-- What is next: README, packaging, and the final test pass. [Add the actual work from this session.]

@@ -26,7 +26,7 @@ clean:
 	rm -rf .mypy_cache
 
 lint:
-	flake8 . --exclude .venv
+	flake8 . --exclude .venv,mazegenerator
 	mypy . --warn-return-any \
 	--warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs \
-	--check-untyped-defs --exclude .venv
+	--check-untyped-defs --exclude ./mazegenerator

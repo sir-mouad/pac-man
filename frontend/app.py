@@ -36,6 +36,7 @@ KEY_CHEAT = {
 
 
 class Screen(Enum):
+    """Screens the application can show."""
     MENU = auto()
     PLAYING = auto()
     PAUSED = auto()
@@ -45,7 +46,9 @@ class Screen(Enum):
 
 
 class Application:
+    """Runs the window, event loop, menus, and in-game screens."""
     def __init__(self, engine: GameEngine) -> None:
+        """Open the window and show the main menu."""
         pygame.display.init()
         pygame.font.init()
         self.engine = engine
@@ -86,6 +89,7 @@ class Application:
         self.draw()
 
     def navigate(self, screen: Screen) -> None:
+        """Switch to a screen and reset its selection."""
         self.screen = screen
         self.selected = 0
         self.accumulator = 0
@@ -98,6 +102,7 @@ class Application:
         self.draw()
 
     def start(self) -> None:
+        """Start a new game and show the play screen."""
         self.engine.start_new_game()
         self.snapshot = self.engine.snapshot()
         self.game_phase = 0
@@ -105,17 +110,20 @@ class Application:
         self.navigate(Screen.PLAYING)
 
     def pause(self) -> None:
+        """Pause the game if it is running."""
         if self.screen is Screen.PLAYING:
             self.engine.pause_game()
             self.snapshot = self.engine.snapshot()
             self.navigate(Screen.PAUSED)
 
     def resume(self) -> None:
+        """Resume a paused game."""
         self.engine.pause_game()
         self.snapshot = self.engine.snapshot()
         self.navigate(Screen.PLAYING)
 
     def activate(self, action: str) -> None:
+        """Run the action for a menu button or key press."""
         if action == "start":
             self.start()
         elif action == "scores":
@@ -140,10 +148,12 @@ class Application:
                               or "Use 1-10 letters, numbers or spaces.")
 
     def logical_position(self, pos: tuple) -> tuple[float, float]:
+        """Convert a window pixel position to canvas coordinates."""
         return ((pos[0] - self.viewport.x) * SIZE[0] / self.viewport.width,
                 (pos[1] - self.viewport.y) * SIZE[1] / self.viewport.height)
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        """Route one pygame event to the right handler."""
         if event.type == pygame.QUIT:
             self.running = False
         elif event.type == pygame.WINDOWFOCUSLOST:
@@ -171,6 +181,7 @@ class Application:
             self.handle_key(event.key)
 
     def handle_key(self, key: int) -> None:
+        """Handle a key press for the current screen."""
         if self.screen is Screen.PLAYING:
             if key in KEY_DIRECTIONS:
                 self.engine.set_direction(KEY_DIRECTIONS[key])
@@ -205,6 +216,7 @@ class Application:
                 self.activate(self.focus_actions[self.selected])
 
     def update(self, elapsed: float) -> None:
+        """Advance animations and, during play, the game."""
         elapsed = max(0, min(elapsed, .1))
         self.phase += elapsed
         self.notice_time = max(0, self.notice_time - elapsed)
@@ -226,6 +238,7 @@ class Application:
     def button(self, rect: tuple, label: str, action: str,
                primary: bool = False, keyboard: bool = True,
                number: str = "") -> None:
+        """Draw a menu button and register it for mouse and keyboard."""
         index = len(self.focus_actions)
         if keyboard:
             self.focus_actions.append(action)
@@ -244,6 +257,7 @@ class Application:
                     (x + w - 22, y + h / 2 - 10), 26, text_color, "right")
 
     def header(self, active: str = "LOBBY") -> None:
+        """Draw the top bar with the logo and section name."""
         self.p.pacman((55, 48), 15, phase=.14)
         self.p.wordmark((83, 37), 3)
         pygame.draw.line(self.canvas, LINE, (231, 34), (231, 62))
@@ -252,12 +266,17 @@ class Application:
         pygame.draw.circle(self.canvas, TEAL, (1217, 48), 4)
         pygame.draw.line(self.canvas, LINE, (40, 88), (1240, 88))
 
-    def footer(self, message: str = "A LITTLE NOSTALGIA. A NEW HIGH SCORE.") -> None:
+    def footer(
+        self,
+        message: str = "A LITTLE NOSTALGIA. A NEW HIGH SCORE.",
+    ) -> None:
+        """Draw the bottom bar with a short message."""
         pygame.draw.line(self.canvas, LINE, (40, 785), (1240, 785))
         self.p.label("42 / PAC-MAN", (42, 806))
         self.p.text(message, (1240, 806), 18, MUTED, "right")
 
     def draw_menu(self) -> None:
+        """Draw the main menu with the attract-mode maze preview."""
         self.header()
         self.p.label("THE CLASSIC. YOUR NEXT CHALLENGE.", (56, 133), TEAL)
         self.p.text("One more", (51, 178), 96)
@@ -295,6 +314,7 @@ class Application:
             self.footer()
 
     def draw_game(self) -> None:
+        """Draw the play screen: score, timer, lives, and maze."""
         snap = self.snapshot
         self.header(
             "IN THE MAZE" if self.screen is Screen.PLAYING else "PAUSED")
@@ -332,6 +352,7 @@ class Application:
         self.footer("P / ESC   PAUSE       •       TAKE IT ONE DOT AT A TIME")
 
     def draw_pause(self) -> None:
+        """Draw the game behind a dimmed pause menu."""
         self.draw_game()
         self.buttons = []
         self.focus_actions = []
@@ -349,12 +370,14 @@ class Application:
                     "center")
 
     def page_title(self, eyebrow: str, title: str, subtitle: str) -> None:
+        """Draw the heading shared by the score and help pages."""
         self.header(eyebrow)
         self.p.label(eyebrow, (80, 132), TEAL)
         self.p.text(title, (77, 170), 72)
         self.p.text(subtitle, (80, 246), 26, MUTED)
 
     def draw_scores(self) -> None:
+        """Draw the highscore table."""
         self.page_title("HALL OF FAME", "Good runs. Great players.",
                         "Ten spots. A whole lot of bragging rights.")
         self.p.panel((80, 301, 1120, 385))
@@ -379,9 +402,11 @@ class Application:
             self.p.text(f'{entry["score"]:,}', (1158, y), 26, color, "right")
         self.button((80, 713, 300, 50), "Back to main menu", "menu")
         self.button((916, 713, 284, 50), "Chase a high score", "start", True)
-        self.footer("UP / DOWN   SELECT       ENTER   CONFIRM       ESC   BACK")
+        self.footer(
+            "UP / DOWN   SELECT       ENTER   CONFIRM       ESC   BACK")
 
     def draw_instructions(self) -> None:
+        """Draw the how-to-play page."""
         self.page_title("HOW TO PLAY", "A classic for a reason.",
                         "Easy to pick up. One more round to master.")
         cards = [
@@ -405,7 +430,8 @@ class Application:
         self.p.text("Stay in the game.", (105, 599), 36)
         for i, line in enumerate((
                 "Avoid ghosts. Your round ends when lives or time run out.",
-                "Clear all levels to win. Save your score with your arcade name.",
+                "Clear all levels to win. "
+                "Save your score with your arcade name.",
                 "Names use 1-10 English letters, numbers or spaces.")):
             self.p.text(line, (449, 565 + i * 32), 24, MUTED)
         self.button((80, 713, 300, 50), "Back to main menu", "menu")
@@ -414,6 +440,7 @@ class Application:
             "ARROWS / WASD   MOVE       P / ESC   PAUSE       ENTER   CONFIRM")
 
     def draw_result(self) -> None:
+        """Draw the game-over or victory screen with the name box."""
         victory = self.snapshot.state is State.VICTORY
         self.header("ROUND COMPLETE")
         self.p.panel((270, 124, 740, 631), SURFACE, LINE, 24)
@@ -423,8 +450,9 @@ class Application:
                              True, self.phase)
         else:
             self.p.pacman((640, 187), 27, phase=self.phase)
-        self.p.label("VICTORY / ALL LEVELS CLEARED" if victory else "GAME OVER",
-                     (489 if victory else 588, 242), TEAL)
+        self.p.label(
+            "VICTORY / ALL LEVELS CLEARED" if victory else "GAME OVER",
+            (489 if victory else 588, 242), TEAL)
         self.p.text("You owned the maze." if victory else "What a run.",
                     (640, 279), 54, WHITE, "center")
         self.p.label("FINAL SCORE", (577, 351))
@@ -437,8 +465,9 @@ class Application:
         cursor = "|" if int(self.phase * 2) % 2 == 0 else ""
         self.p.text(self.name + cursor if self.name else "Your arcade name" +
                     cursor, (378, 522), 32, WHITE if self.name else MUTED)
-        self.p.text(self.error or "Letters, numbers and spaces. Make it yours.",
-                    (358, 577), 22, RED if self.error else MUTED)
+        self.p.text(
+            self.error or "Letters, numbers and spaces. Make it yours.",
+            (358, 577), 22, RED if self.error else MUTED)
         self.button((358, 626, 564, 54), "Save score & return", "save", True)
         self.p.text("ESC to return without saving", (640, 707), 20,
                     MUTED, "center")
@@ -446,6 +475,7 @@ class Application:
             "ENTER   SAVE SCORE       BACKSPACE   EDIT       ESC   SKIP")
 
     def draw(self) -> None:
+        """Clear the frame and draw the current screen."""
         self.buttons = []
         self.focus_actions = []
         self.p.background()
@@ -458,6 +488,7 @@ class Application:
         renderers[self.screen]()
 
     def present(self) -> None:
+        """Scale the canvas to fit the window and show it."""
         width, height = self.window.get_size()
         scale = min(width / SIZE[0], height / SIZE[1])
         size = (max(1, round(SIZE[0] * scale)),
@@ -479,11 +510,13 @@ class Application:
                 round(564 * scale), round(60 * scale)))
 
     def capture(self, path: Path) -> None:
+        """Save the current frame to an image file."""
         self.draw()
         path.parent.mkdir(parents=True, exist_ok=True)
         pygame.image.save(self.canvas, str(path))
 
     def run(self) -> None:
+        """Run the main loop until the window is closed."""
         try:
             while self.running:
                 elapsed = self.clock.tick(FPS) / 1000

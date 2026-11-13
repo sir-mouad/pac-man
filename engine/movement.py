@@ -1,17 +1,25 @@
 
+from typing import Any
+
 from engine.shared import Direction
 
 
 class Mover:
-    def __init__(self, position, direction=None, seconds_per_cell=None):
+    """Base class for a sprite that moves one cell at a time."""
+    def __init__(self, position: tuple[int, int],
+                 direction: Direction | None = None,
+                 seconds_per_cell: Any = None) -> None:
+        """Set the starting cell, direction, and speed."""
         self.position = position
         self.direction = direction
-        self.requested_direction = None
+        self.requested_direction: Direction | None = None
         self.seconds_per_cell = seconds_per_cell
         self.move_timer = 0.0
         self.protected_time = 0.0
 
-    def can_move(self, level, direction):
+    def can_move(self, level: Any,
+                 direction: Direction | None) -> bool:
+        """Return True if the sprite can step in this direction."""
         if getattr(self, "walk_through_walls", False):
             x, y = self.position
             x, y = self._next_cell(x, y, direction)
@@ -34,7 +42,8 @@ class Mover:
 
         return False
 
-    def step(self, level, frame_time):
+    def step(self, level: Any, frame_time: float) -> None:
+        """Advance the timer and move one cell when it is time."""
         self.move_timer += frame_time
 
         if self.move_timer < self.seconds_per_cell:
@@ -56,7 +65,8 @@ class Mover:
         x, y = self.position
         self.position = self._next_cell(x, y, self.direction)
 
-    def _next_cell(self, x, y, direction):
+    def _next_cell(self, x: int, y: int, direction: Any) -> Any:
+        """Return the cell next to (x, y) in the given direction."""
         if direction is Direction.UP:
             return (x, y - 1)
         elif direction is Direction.RIGHT:
@@ -66,17 +76,21 @@ class Mover:
         elif direction is Direction.LEFT:
             return (x - 1, y)
 
-    def set_direction(self, direction):
+    def set_direction(self, direction: Direction | None) -> None:
+        """Store the direction to turn to at the next cell."""
         self.requested_direction = direction
 
 
 class Player(Mover):
-    def __init__(self, start):
+    """The Pac-Man sprite controlled by the player."""
+    def __init__(self, start: tuple[int, int]) -> None:
+        """Create the player at its start cell."""
         super().__init__(start, direction=None, seconds_per_cell=0.15)
         self.start = start
         self.walk_through_walls = False
 
-    def reset(self, start):
+    def reset(self, start: tuple[int, int]) -> None:
+        """Move the player back to start and stop it."""
         self.position = start
         self.direction = None
         self.requested_direction = None
@@ -84,14 +98,19 @@ class Player(Mover):
 
 
 class Ghost(Mover):
-    def __init__(self, corner, level_number):
+    """A ghost that chases the player, flees when edible, and respawns."""
+    behavior: Any  # chase strategy, set by GameEngine
+
+    def __init__(self, corner: tuple[int, int], level_number: int) -> None:
+        """Create a ghost that starts from its corner."""
         super().__init__(corner, direction=None, seconds_per_cell=0.45)
         self.corner = corner
         self.level_number = level_number
         self.first_seconds = self.seconds_per_cell
         self.edible = False
 
-    def respawn(self):
+    def respawn(self) -> None:
+        """Send the ghost back to its corner and reset its speed."""
         self.position = self.corner
         self.direction = None
         self.requested_direction = None

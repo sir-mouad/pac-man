@@ -14,7 +14,9 @@ ANGLES: dict[Direction | None, float] = {
 
 
 class MazeRenderer:
+    """Draws the maze, pellets, ghosts, and Pac-Man from a game snapshot."""
     def __init__(self, painter: Painter) -> None:
+        """Create a renderer that draws with the given painter."""
         self.painter = painter
         self.cache_key: tuple | None = None
         self.layer: pygame.Surface | None = None
@@ -22,7 +24,8 @@ class MazeRenderer:
         self.motion: dict[str, tuple[tuple, tuple, float]] = {}
 
     def position(self, name: str, target: tuple, phase: float,
-                duration: float) -> tuple:
+                 duration: float) -> tuple:
+        """Return a smoothly moving position for a sprite."""
         if name not in self.motion:
             self.motion[name] = (target, target, phase)
         start, end, began = self.motion[name]
@@ -36,6 +39,7 @@ class MazeRenderer:
 
     def draw(self, snap: GameSnapshot, area: pygame.Rect,
              phase: float) -> pygame.Rect:
+        """Draw the maze and sprites in area; return the maze rectangle."""
         cell = min(area.width / snap.width, area.height / snap.height)
         width, height = round(cell * snap.width), round(cell * snap.height)
         bounds = pygame.Rect(0, 0, width, height)
@@ -52,6 +56,7 @@ class MazeRenderer:
             self.painter.canvas.blit(self.layer, bounds)
 
         def center(pos: tuple) -> tuple:
+            """Convert a grid cell to screen pixels."""
             return (round(bounds.x + (pos[0] + .5) * cell),
                     round(bounds.y + (pos[1] + .5) * cell))
 
@@ -76,9 +81,10 @@ class MazeRenderer:
     @staticmethod
     def _walls(snap: GameSnapshot, cell: float,
                width: int, height: int) -> pygame.Surface:
+        """Pre-render the walls onto one surface so drawing stays fast."""
         layer = pygame.Surface((width + 1, height + 1))
         layer.fill(INK)
-        lines = []
+        lines: list[tuple[tuple[int, int], tuple[int, int]]] = []
         for y, row in enumerate(snap.walls):
             for x, walls in enumerate(row):
                 left, top = round(x * cell), round(y * cell)

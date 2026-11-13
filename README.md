@@ -1,126 +1,180 @@
-# PAC-MAN / Arcade Club
+*This project has been created as part of the 42 curriculum by mhadir, sreja.*
 
-A desktop Pac-Man game with a warm yellow and teal arcade interface. Built
-with Python 3.13 and Pygame. The frontend displays engine snapshots; movement,
-collisions, scoring, timers and level progression stay in the engine.
+# Pac-Man: Ghosts! More ghosts!
+![Image description](./docs/images/main-menu.png)
+## Description
 
-![The Arcade Club main menu](docs/images/main-menu.png)
+A playable Pac-Man game written in Python 3.13 with pygame. The player moves
+Pac-Man through a maze, eats pacgums and super pacgums, avoids four ghosts,
+and advances through levels until all lives or time are gone or every level is
+cleared. Scores are saved to a local top-10 highscore table.
 
-## Play from source
+The project is split into two parts:
+
+- `engine/` contains all game rules, maze construction, movement, ghost AI,
+  scoring and highscores. It does not import pygame.
+- `frontend/` draws the engine's snapshots with pygame and handles input,
+  menus and the event loop.
+
+The maze generator is the A-Maze-ing package assigned by the 42 curriculum. It
+is used as provided and is not modified in this project.
+
+## Instructions
+
+Requirements: Python 3.13 and [uv](https://docs.astral.sh/uv/).
 
 ```sh
-uv sync
-make run
+make install     # uv sync, then installs the mazegenerator package from the zip
+make run         # starts the game with config.json from the project root
+make run ARG=/absolute/path/to/config.json   # use a different config file
+make lint        # flake8 and mypy
+make build       # standalone executable in dist/pac-man (PyInstaller)
+make clean       # removes caches
 ```
 
-To use a specific configuration:
+`make install` extracts `mazegenerator-00001.zip` and copies the `mazegenerator`
+package into the project if it is not already there.
 
-```sh
-make run ARG=/absolute/path/to/config.json
-# or, from any working directory:
-/path/to/pac-man/.venv/bin/python /path/to/pac-man/pac-man.py /path/to/config.json
-```
+### Controls
 
-The window can be resized. The interface keeps its proportions with
-letterboxing, and mouse positions follow the scaled interface.
-
-| Action | Controls |
+| Action | Keys |
 | --- | --- |
-| Move | Arrow keys or WASD |
-| Select a menu item | Up/down, W/S or Tab |
-| Confirm | Enter or Space; menu buttons also accept clicks |
+| Move | Arrow keys or W/A/S/D |
+| Select a menu item | Up/Down, W/S or Tab |
+| Confirm | Enter or Space (menu buttons also accept mouse clicks) |
 | Pause / resume | P or Escape |
-| Return from instructions / highscores | Escape |
-| Enter a score name | Type; Backspace to edit; Enter to save |
+| Back to the menu (from the main menu, Escape exits) | Escape |
+| Type a score name | Keyboard; Backspace to edit; Enter to save |
 | Skip saving a score | Escape on the result screen |
-| Exit | Exit arcade in the menu, Escape in the menu, or close the window |
 
-Eat all dots and power pellets to advance. Power pellets make ghosts edible,
-shown with a blue body, frightened face and white flashes. Clear all levels
-to win. Running out of lives or time ends the game. The result screen accepts
-1-10 ASCII letters, numbers or spaces; names cannot be blank.
+### Cheat keys (for peer review)
 
-## Interface
-
-- Main menu with a real engine maze preview and four keyboard-accessible actions.
-- Maze with animated Pac-Man, distinct ghosts, pulsing pellets and cached walls.
-- HUD displaying score, lives, level and remaining time from the snapshot.
-- Pause overlay; losing window focus also pauses gameplay.
-- Separate victory and game-over messages, final score and validated score entry.
-- Persistent top-10 table, empty state and illustrated instructions.
-- One 60 FPS loop with bounded, fixed simulation steps. Presentation eases
-  between observed cells without predicting movement or changing the engine.
-
-Fonts ship with Pygame. The wordmark and sprites are drawn in code; no network
-or host fonts are needed at runtime. The original temporary UI remains in
-`tester.py` for reference; `pac-man.py` now launches `frontend/app.py`.
-
-## Configuration and saved scores
-
-Without an explicit config argument, the game first checks for `config.json`
-in its user data directory, then uses the config bundled with the game.
-It never depends on the current working directory.
-
-| Platform | Default data directory |
+| Key | Effect |
 | --- | --- |
-| macOS | `~/Library/Application Support/Pac-Man/` |
-| Windows | `%APPDATA%/Pac-Man/` |
-| Linux | `$XDG_DATA_HOME/pac-man/` or `~/.local/share/pac-man/` |
+| 1 | Skip: clear the level's pacgums and power pellets |
+| 2 | No-clip: walk through walls |
+| 3 | Turn every pacgum into a super pacgum |
+| 4 | Immortal: ghosts cannot cost a life |
+| 5 | Auto-win: jump to the victory screen |
+| 6 | Reset: undo the cheats above |
 
-`highscore_filename` defaults to `highscores.json`. Relative score filenames
-use the data directory by default. With an explicit config argument, relative
-score filenames resolve beside that config. Absolute filenames are honored.
-`PACMAN_DATA_DIR` overrides the default data directory, useful for a portable
-install or isolated testing. Parent directories are created when saving.
+## Resources
 
-Score files are replaced atomically. A failed write keeps the name screen open,
-explains the error, and leaves the previous scores intact so the player can retry.
+Classic references:
 
-## Standalone build
+- Pac-Man, history and game design: https://en.wikipedia.org/wiki/Pac-Man
+- pygame documentation: https://www.pygame.org/docs/
+- PyInstaller documentation: https://pyinstaller.org/en/stable/
 
-```sh
-make build
-make check-build
+### Use of AI
+
+- Explaining the game logic and how the ghosts behave.
+
+## Configuration
+
+The game reads a JSON file. Lines starting with `#` are comments. Invalid
+values print a warning and fall back to the default for that setting. Unknown
+keys are ignored. A missing or unreadable file uses the defaults.
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `highscore_filename` | `"highscores.json"` | Score file name. Relative names are stored in the data directory, or beside the config file if one is given explicitly. Must end in `.json`. |
+| `levels` | 20 x 15 | List of `{"width", "height"}` objects, one per level. A list shorter than 10 entries is padded with 20 x 15 levels to 11 levels in total. |
+| `lives` | `10` | Lives at the start of a game. |
+| `points_per_pacgum` | `10` | Points for each pacgum. |
+| `points_per_super_pacgum` | `50` | Points for each super pacgum. |
+| `points_per_ghost` | `200` | Points for each edible ghost eaten. |
+| `seed` | `42` | Maze seed for level 1. |
+| `level_max_time` | `180` | Seconds allowed per level. |
+
+Without a config argument, the game looks for `config.json` in the user data
+directory and then falls back to the copy bundled with the game, so it does not
+depend on the current working directory. `PACMAN_DATA_DIR` overrides the data
+directory.
+
+## Highscore
+
+The top 10 scores are stored in a JSON file in the user data directory:
+
+The file has the form `{"highscores": [{"name": "...", "score": 0}]}`, sorted
+from highest to lowest.
+
+Names must be 1 to 10 letters, digits or spaces. Scores must be non-negative
+integers. Invalid entries in a loaded file are skipped.
+
+Why JSON in a plain file: it needs no database or server, it is easy to read
+and debug by hand, and the Python standard library reads and writes it. A missing
+file is treated as an empty table. A corrupted file prints a warning and starts
+with an empty table, so the game keeps running. Save failures print a warning
+and the game continues.
+
+## Maze Generation
+
+Levels are built by `engine/maze_adapter.py`, which calls the assigned
+A-Maze-ing package as `MazeGenerator(size, perfect=False, seed=seed)`. The
+`perfect=False` is set as the subject requires, for Pac-Man-style corridors.
+The package returns a grid of wall bitmasks. The adapter reads bit value 1 as the
+wall above the cell, 2 to its right, 4 below and 8 to its left, and stores them
+as four booleans per cell in that order (up, right, down, left).
+
+After generation, the adapter places:
+
+- the player in the middle of the maze,
+- the four ghosts in the corners,
+- a super pacgum in each corner,
+- a pacgum in every other open cell.
+
+If a corner or the middle is a wall, the nearest open cell is used. Level 1 uses
+the configured `seed`. Later levels use seed `0` as passed to the generator.
+
+## Implementation
+
+- **Game loop:** `frontend/app.py` runs at 60 FPS. Elapsed time is clamped to
+  0.1 s, and the engine advances in fixed steps of 1/60 s, so the simulation
+  does not depend on frame rate.
+- **Movement:** Pac-Man and ghosts move one cell at a time at their own speed.
+  The player's next turn is buffered until the maze allows it.
+- **Ghosts:** each ghost has its own target rule. Blinky chases the player's
+  cell. Pinky aims four cells ahead of the player. Inky uses Blinky's position
+  to choose its target. Clyde chases while it is more than 8 cells away and
+  returns to its corner when it is closer. When a power pellet is eaten, ghosts
+  turn blue for 8 seconds and move away from the player. An eaten ghost waits 3
+  seconds, then respawns in its corner.
+- **Scoring and lives:** pacgums, power pellets and eaten ghosts add points, and
+  points never decrease. A ghost touching the player costs a life unless the
+  ghost is edible. Losing a life resets the player and ghosts.
+- **Levels:** a level ends when all pacgums and power pellets are eaten. The
+  game is won after the last level. The game is over when lives reach zero or
+  the level timer runs out.
+- **Pause:** P or Escape pauses. Losing window focus also pauses.
+- **Rendering:** the interface is drawn at a fixed 1280 x 840 and scaled to the
+  window with letterboxing. The wall layer is cached and redrawn only when the
+  maze or window size changes.
+
+## General Software Architecture
+
+```
+pac-man.py                 entry point: parses arguments, builds GameEngine and Application
+engine/
+  engine.py                GameEngine: owns the session, calls the other engine parts
+  rules.py                 GameRules: score, lives, timers, win/lose status
+  maze_adapter.py          MazeAdapter, Level: builds a level from the maze package
+  movement.py              Mover (base), Player, Ghost: cell-by-cell movement
+  ghosts.py                GhostAI and the four ghost target behaviors
+  highscores.py            Highscores: top-10 table, validation, JSON load/save
+  parser.py                Parser: reads and validates config.json, provides defaults
+  shared.py                Direction, State, Cheat enums; GameSnapshot, GhostView dataclasses
+frontend/
+  app.py                   Application: window, event loop, menus and game screens
+  maze.py                  MazeRenderer: draws the maze and sprites from a snapshot
+  theme.py                 Painter: palette, text and sprite drawing primitives
+  paths.py                 data_directory, default_config, score_path
 ```
 
-PyInstaller includes the Python runtime, Pygame, its default font, engine,
-frontend and default config. Recipients do not need Python or the source code.
-Build on the operating system and architecture you intend to distribute:
+Data flows one way. The frontend asks the engine to advance, then reads a
+`GameSnapshot` (a plain copy of the state) to draw. It never changes game rules.
 
-- macOS: distribute `dist/Pac-Man.app` (the complete app).
-- Windows: distribute the complete `dist/Pac-Man/` folder; run `Pac-Man.exe`.
-- Linux: distribute the complete `dist/Pac-Man/` folder; run `Pac-Man`.
+## Project Management
 
-Do not distribute the executable alone from inside the folder. The macOS build
-is locally signed by PyInstaller; public distribution still requires your own
-Developer ID signing and notarization. Windows and Linux build recipes are
-provided; they need validation on those operating systems.
-
-`make check-build` copies the built app outside the source tree and launches it
-from a temporary working directory with both bundled and explicit configs.
-It checks the rendered startup, four ghosts and resolved score paths, with
-`PYTHONPATH` and `PYTHONHOME` removed. You can also run the executable with
-`--smoke-test` for a headless startup check that does not write scores.
-
-Bundle resource lookup follows
-[PyInstaller's runtime path guidance](https://pyinstaller.org/en/stable/runtime-information.html).
-
-## Verification
-
-```sh
-make test
-make lint
-```
-
-The standard-library integration suite uses the real engine and SDL's dummy
-display. It covers keyboard and mouse navigation, all movement mappings,
-pause/focus behavior, restart, bounded updates, result transitions, invalid
-names, score persistence and write failures, top-10 ordering, portrait mazes,
-resizing and launch from an unrelated directory. `make lint` checks the new
-frontend, scripts and tests; mypy checks the frontend against the engine imports.
-
-Project history, ownership and remaining submission checks are in
-[`docs/project-management/`](docs/project-management/README.md).
-
-For a file-by-file explanation of the frontend additions, engine integration,
-and build tools, see the [frontend implementation guide](docs/frontend-changes.md).
+Planning, timeline, progress, risks, decisions, blockers, team roles and the
+test plan are in [`docs/project-management/`](docs/project-management/README.md).

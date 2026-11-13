@@ -1,15 +1,16 @@
 from collections import deque
+from typing import Any
 
 from mazegenerator import MazeGenerator
 from dataclasses import dataclass, field
-from engine.parser import Parser
 
 
 @dataclass
 class Level:
+    """One maze level: walls, pacgums, and start positions."""
     width: int
     height: int
-    walls: list[list[int]]
+    walls: list[list[list[bool]]]
     pacgums: set[tuple[int, int]] = field(default_factory=set)
     super_pacgums: set[tuple[int, int]] = field(default_factory=set)
     player_start: tuple[int, int] = (0, 0)
@@ -17,10 +18,13 @@ class Level:
 
 
 class MazeAdapter():
-    def __init__(self, config):
+    """Builds each level from the assigned maze generator."""
+    def __init__(self, config: dict[str, Any]) -> None:
+        """Store the game configuration."""
         self.config = config
 
-    def generate_level(self, index):
+    def generate_level(self, index: int) -> Level:
+        """Generate level index with walls, pacgums, and start positions."""
         size = self._level_size(index)
         seed = self._level_seed(index)
         try:
@@ -36,19 +40,22 @@ class MazeAdapter():
         self._place_pacgums(level)
         return level
 
-    def _level_size(self, index):
+    def _level_size(self, index: int) -> tuple[int, int]:
+        """Return the width and height set for a level in the config."""
         level = self.config["levels"][index - 1]
         return (level["width"], level["height"])
 
-    def _level_seed(self, index):
+    def _level_seed(self, index: int) -> Any:
+        """Return the configured seed for level 1, or 0 for later levels."""
         if index == 1:
             return self.config["seed"]
         return 0
 
-    def _decode_walls(self, grid):
-        decoded = []
+    def _decode_walls(self, grid: Any) -> list[list[list[bool]]]:
+        """Turn each cell's wall bitmask into four booleans."""
+        decoded: list[list[list[bool]]] = []
         for row in grid:
-            decoded_row = []
+            decoded_row: list[list[bool]] = []
             for value in row:
                 decoded_row.append([
                     (value // 1) % 2 == 1,
@@ -59,7 +66,8 @@ class MazeAdapter():
             decoded.append(decoded_row)
         return decoded
 
-    def _place_pacgums(self, level):
+    def _place_pacgums(self, level: Any) -> None:
+        """Put a pacgum in every open cell except corners and start."""
         for y in range(level.height):
             for x in range(level.width):
                 if all(level.walls[y][x]):
@@ -70,7 +78,8 @@ class MazeAdapter():
                     continue
                 level.pacgums.add((x, y))
 
-    def _place_super_pacgums(self, level):
+    def _place_super_pacgums(self, level: Any) -> None:
+        """Place a super pacgum in each of the four corners."""
         corners = [
             (0, 0),
             (level.width - 1, 0),
@@ -81,7 +90,8 @@ class MazeAdapter():
             self._search_open_cell(level, x, y) for x, y in corners
         }
 
-    def _place_ghosts_and_player(self, level):
+    def _place_ghosts_and_player(self, level: Any) -> None:
+        """Put the player in the middle and the four ghosts in the corners."""
         middle = (level.width // 2, level.height // 2)
         level.player_start = self._search_open_cell(level, *middle)
 
@@ -95,7 +105,8 @@ class MazeAdapter():
             self._search_open_cell(level, x, y) for x, y in corners
         ]
 
-    def _search_open_cell(self, level, x, y):
+    def _search_open_cell(self, level: Any, x: int, y: int) -> tuple[int, int]:
+        """Find the closest open cell to (x, y) with a breadth-first search."""
         if not all(level.walls[y][x]):
             return x, y
         queue = deque([(x, y)])

@@ -17,3 +17,4 @@
 - **Score writes:** write and flush a temporary file beside the score file, then atomically replace it. Failed saves roll back the in-memory entry and display an error on the name screen.
 - **Packaging:** PyInstaller builds the whole desktop application, including config and Pygame fonts. Builds must be produced and validated on each target OS/architecture.
 - **Ghost and super-pacgum placement:** [to confirm: shared corners or separate cells].
+- **Demo distribution:** Itch.io as a free build with restricted or draft visibility, so the page stays unlisted. Steam was rejected because it charges a fee per app and requires a review process, which is not needed for a demonstration.

@@ -30,7 +30,9 @@ GLYPHS = {
 
 
 class Painter:
+    """Draws text, panels, and arcade sprites onto a pygame surface."""
     def __init__(self, canvas: pygame.Surface) -> None:
+        """Create the fonts used for all text drawing."""
         self.canvas = canvas
         # Pygame's redistributable bundled font, never a host-specific font.
         self.fonts = {
@@ -40,6 +42,7 @@ class Painter:
 
     def text(self, value: object, pos: tuple[float, float], size: int = 24,
              color: tuple = WHITE, align: str = "left") -> pygame.Rect:
+        """Draw text at pos and return the rectangle it occupies."""
         image = self.fonts[size].render(str(value), True, color)
         rect = image.get_rect()
         if align == "center":
@@ -53,10 +56,12 @@ class Painter:
 
     def panel(self, rect: pygame.Rect | tuple, color: tuple = SURFACE,
               border: tuple = LINE, radius: int = 18) -> None:
+        """Draw a rounded box with a thin border."""
         pygame.draw.rect(self.canvas, color, rect, border_radius=radius)
         pygame.draw.rect(self.canvas, border, rect, 1, border_radius=radius)
 
     def label(self, value: str, pos: tuple, color: tuple = MUTED) -> None:
+        """Draw small uppercase text one character at a time."""
         x, y = pos
         for char in value.upper():
             image = self.fonts[18].render(char, True, color)
@@ -64,6 +69,7 @@ class Painter:
             x += image.get_width() + 2
 
     def wordmark(self, pos: tuple, scale: int = 4) -> None:
+        """Draw the PAC-MAN title from pixel glyphs."""
         x, y = pos
         for char in "PAC-MAN":
             for row, bits in enumerate(GLYPHS[char]):
@@ -75,12 +81,14 @@ class Painter:
             x += 6 * scale
 
     def key(self, value: str, pos: tuple, width: int = 34) -> None:
+        """Draw a keyboard key label inside a small box."""
         x, y = pos
         self.panel((x, y, width, 28), RAISED, LINE, 6)
         self.text(value, (x + width / 2, y + 6), 18, WHITE, "center")
 
     def pacman(self, pos: tuple, radius: float, angle: float = 0,
                phase: float = 0) -> None:
+        """Draw Pac-Man as a circle with an animated mouth."""
         x, y = pos
         mouth = 0.16 + 0.34 * abs(math.sin(phase * 9))
         points = [(x, y)]
@@ -92,6 +100,7 @@ class Painter:
 
     def ghost(self, pos: tuple, radius: float, color: tuple,
               edible: bool = False, phase: float = 0) -> None:
+        """Draw a ghost, blue and flashing when edible."""
         x, y = pos
         r = max(4, round(radius))
         x, y = round(x), round(y)
@@ -124,6 +133,7 @@ class Painter:
                                    (eye[0] + 1, eye[1]), max(2, r // 7))
 
     def background(self) -> None:
+        """Fill the canvas with the dark background and dot grid."""
         self.canvas.fill(INK)
         for x in range(24, SIZE[0], 24):
             for y in range(24, SIZE[1], 24):

@@ -6,15 +6,17 @@ from pathlib import Path
 
 os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
 
-from engine.engine import GameEngine
-from engine.parser import Parser
-from frontend.paths import default_config, score_path
+from engine.engine import GameEngine  # noqa: E402
+from engine.parser import Parser  # noqa: E402
+from frontend.paths import default_config, score_path  # noqa: E402
 
 
 def main() -> None:
+    """Parse arguments, load the config, and start the game."""
     parser = argparse.ArgumentParser(description="PAC-MAN / One more round")
     parser.add_argument("config", nargs="?", type=Path,
-                        help="custom config; relative score paths use its folder")
+                        help="custom config; relative score paths "
+                        "use its folder")
     parser.add_argument("--smoke-test", action="store_true",
                         help="check the bundle without opening a window")
     args = parser.parse_args()
