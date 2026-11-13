@@ -1,5 +1,5 @@
+.PHONY: build
 ARG=config.json
-
 
 install:
 	uv sync
@@ -20,9 +20,12 @@ run:
 debug:
 	uv run python -m pdb pac-man.py $(ARG)
 
+build:
+	pyinstaller --onefile --name pac-man --add-data "config.json:." pac-man.py
+
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
-	rm -rf .mypy_cache
+	rm -rf .mypy_cache build dist pac-man.zip pac-man.spec
 
 lint:
 	flake8 . --exclude .venv

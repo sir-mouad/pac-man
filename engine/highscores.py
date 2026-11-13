@@ -1,6 +1,6 @@
 import json
 import re
-
+from pathlib import Path
 
 class Highscores:
     def __init__(self, path):
@@ -26,11 +26,12 @@ class Highscores:
 
     def save(self):
         try:
+            Path(self.path).parent.mkdir(parents=True, exist_ok=True)
             with open(self.path, "w") as f:
                 json.dump({"highscores": self.scores}, f, indent=4)
         except PermissionError as e:
-            print("WARNING: Whoever set the permissions to 000, ")
-            (f"what were you thinking? 😑😑😑  ({e}")
+            print("WARNING: Whoever set the permissions to 000, "
+            f"what were you thinking? 😑😑😑  ({e}")
         except OSError as e:
             print(f"WARNING: cannot save highscores ({e})")
 
