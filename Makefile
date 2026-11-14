@@ -13,6 +13,7 @@ install:
 	fi
 
 run:
+	@PYGAME_HIDE_SUPPORT_PROMPT=1 \
 	uv run python pac-man.py $(ARG)
 
 debug:

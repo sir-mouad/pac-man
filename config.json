@@ -9,8 +9,8 @@
   "highscore_filename": "highscores.json",
   #Level example
   "levels": [{"width": 20,"height": 15}],
-  # Lives default is 10 and that is not to mush.
-  # You can discover that by yourself
+  # The default number of lives is 10, which is more than enough.
+  # You'll find out why as you play!
   "lives": 10,
   "points_per_pacgum": 10,
   "points_per_super_pacgum": 50,
@@ -20,6 +20,6 @@
   # optional key
   # No more hiding. No more fear.
   # Ghosts are waiting for you!
-  # Remember that number: 11
+  # Remember that number --> 11
   "imposible_levels": false
 }
