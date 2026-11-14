@@ -4,9 +4,13 @@
 # Game work in any case such if the file is missing
 # Unknown keys are ignored.
 {
+  # The filename file does not matter,
+  # but the file must be a json file.
   "highscore_filename": "highscores.json",
-  #level example
-  "levels": [{"width": 20, "height": 15}],
+  #Level example
+  "levels": [{"width": 20,"height": 15}],
+  # Lives default is 10 and that is not to mush.
+  # You can discover that by yourself
   "lives": 10,
   "points_per_pacgum": 10,
   "points_per_super_pacgum": 50,

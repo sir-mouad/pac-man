@@ -28,10 +28,13 @@ class Parser:
                     if not line.lstrip().startswith("#"):
                         lines.append(line)
                 config = commentjson.loads("".join(lines))
+                if not isinstance(config, dict):
+                    print("WARNING: Format Valid but is not a dict ---> USE_DEFAULT_CONFIG")
+                    return DEFAULT_CONFIG
             return config
         except UnexpectedToken:
             print("WARNING: Invlaid Json format ---> USE_DEFAUT_CONFIG")
-        except (FileNotFoundError, PermissionError):
+        except OSError:
             print("WARNING: Warning: config.json not found "
                   "---> USE_DEFAULT_CONFIG")
         return DEFAULT_CONFIG
@@ -41,14 +44,11 @@ class Parser:
         """Check one config value; warn and return False when it is invalid."""
         try:
             if arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum',
-                       'points_per_ghost', 'level_max_time'):
+                       'points_per_ghost', 'level_max_time', 'seed'):
                 if int(values) > 0:
                     return True
                 else:
                     raise ValueError
-            if arg == 'seed':
-                int(values)
-                return True
             if arg == 'highscore_filename':
                 return True
             if arg == 'levels':
