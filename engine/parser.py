@@ -29,7 +29,8 @@ class Parser:
                         lines.append(line)
                 config = commentjson.loads("".join(lines))
                 if not isinstance(config, dict):
-                    print("WARNING: Format Valid but is not a dict ---> USE_DEFAULT_CONFIG")
+                    print("WARNING: Format Valid but is not a dict "
+                          "---> USE_DEFAULT_CONFIG")
                     return DEFAULT_CONFIG
             return config
         except UnexpectedToken:
