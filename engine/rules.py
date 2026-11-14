@@ -51,17 +51,18 @@ class GameRules:
         if cell in level.super_pacgums:
             level.super_pacgums.remove(cell)
             self.score += self.points_per_super_pacgum
-            if self.level_number <= 10:
-                self.edible_time_left = self.edible_duration
-                for ghost in ghosts:
-                    if not ghost.edible:
-                        if self.level_number <= 7:
-                            lowering = ghost.seconds_per_cell * 0.40
-                        else:
-                            lowering = ghost.seconds_per_cell * 0.20
-                        ghost.seconds_per_cell = (
-                            ghost.seconds_per_cell + lowering)
-                    ghost.edible = True
+            if self.level_number >= 11 and self.config['imposible_levels']:
+                return
+            self.edible_time_left = self.edible_duration
+            for ghost in ghosts:
+                if not ghost.edible:
+                    if self.level_number <= 7:
+                        lowering = ghost.seconds_per_cell * 0.40
+                    else:
+                        lowering = ghost.seconds_per_cell * 0.20
+                    ghost.seconds_per_cell = (
+                        ghost.seconds_per_cell + lowering)
+                ghost.edible = True
 
     def check_ghost_contact(self, player: Any, ghosts: list[Any],
                             met: set[int]) -> None:

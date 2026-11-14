@@ -12,7 +12,8 @@ DEFAULT_CONFIG: dict[str, Any] = {'highscore_filename': 'highscores.json',
                                   'points_per_super_pacgum': 50,
                                   'points_per_ghost': 200,
                                   'seed': 42,
-                                  'level_max_time': 180}
+                                  'level_max_time': 180,
+                                  'imposible_levels': False}
 
 NUM_LEVELS = 11
 
@@ -61,6 +62,9 @@ class Parser:
                         else:
                             raise ValueError
                 return True
+            if arg == 'imposible_levels':
+                if values in (True, False):
+                    return True
         except (ValueError, AttributeError, TypeError):
             print(f"WARNING: Invalid data in {arg} : {values}. "
                   "---> Use DEFAULT_VALUE.")
