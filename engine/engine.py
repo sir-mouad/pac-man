@@ -15,8 +15,7 @@ class GameEngine:
                  highscore_path: Any = None) -> None:
         """Create the engine and set where highscores are stored."""
         self.config = config
-        self.highscores = Highscores(
-            highscore_path or self.config["highscore_filename"])
+        self.highscores = Highscores(self.config["highscore_filename"])
         self.adapter = MazeAdapter(self.config)
         self.rules = GameRules(self.config)
         self.ai = GhostAI()

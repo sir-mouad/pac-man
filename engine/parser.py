@@ -1,6 +1,7 @@
 import commentjson
 from typing import Any
 from lark.exceptions import UnexpectedToken
+import sys
 
 
 DEFAULT_CONFIG: dict[str, Any] = {'highscore_filename': 'highscores.json',
@@ -36,7 +37,7 @@ class Parser:
         except UnexpectedToken:
             print("WARNING: Invlaid Json format ---> USE_DEFAUT_CONFIG")
         except OSError:
-            print("WARNING: Warning: config.json not found "
+            print(f"WARNING: Warning: {path} not found "
                   "---> USE_DEFAULT_CONFIG")
         return DEFAULT_CONFIG
 
@@ -93,9 +94,13 @@ class Parser:
                 new_config[ARG] = VALUE
         return new_config
 
-    def get_config(self, config_path: Any = None) -> dict[str, Any]:
+    def get_config(self) -> dict[str, Any]:
         """Load the config from config_path or the first argument."""
         try:
+            if len(sys.argv) > 1 and sys.argv[1]:
+                config_path = sys.argv[1]
+            else:
+                config_path = "config.json"
             config = self._read_config(config_path)
             new_config = self._build_config(config)
             return new_config
