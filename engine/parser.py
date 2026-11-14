@@ -13,9 +13,12 @@ DEFAULT_CONFIG: dict[str, Any] = {'highscore_filename': 'highscores.json',
                                   'seed': 42,
                                   'level_max_time': 180}
 
+NUM_LEVELS = 11
+
 
 class Parser:
     """Load the JSON config and fill in defaults for bad or missing values."""
+
     def _read_config(self, path: Any) -> Any:
         """Read a config file, skipping lines that start with #."""
         try:
@@ -33,12 +36,17 @@ class Parser:
                   "---> USE_DEFAULT_CONFIG")
         return DEFAULT_CONFIG
 
-    def _check_arg(  # type: ignore[return]
+    def _check_arg(
             self, arg: str, values: Any) -> bool | None:
         """Check one config value; warn and return False when it is invalid."""
         try:
             if arg in ('lives', 'points_per_pacgum', 'points_per_super_pacgum',
-                       'points_per_ghost', 'level_max_time', 'seed'):
+                       'points_per_ghost', 'level_max_time'):
+                if int(values) > 0:
+                    return True
+                else:
+                    raise ValueError
+            if arg == 'seed':
                 int(values)
                 return True
             if arg == 'highscore_filename':
@@ -46,7 +54,7 @@ class Parser:
             if arg == 'levels':
                 for d in values:
                     for key, value in d.items():
-                        if (key in ('height', 'width') and int(value)):
+                        if (key in ('height', 'width') and int(value) > 0):
                             continue
                         else:
                             raise ValueError
@@ -55,6 +63,7 @@ class Parser:
             print(f"WARNING: Invalid data in {arg} : {values}. "
                   "---> Use DEFAULT_VALUE.")
             return False
+        return None
 
     def _build_config(self, config: Any) -> dict[str, Any]:
         """Keep valid settings and use defaults for bad or missing ones."""
@@ -64,9 +73,9 @@ class Parser:
         for arg, value in config.items():
             if arg in DEFAULT_CONFIG:
                 if self._check_arg(arg, value):
-                    if arg == 'levels' and len(value) < 10:
+                    if arg == 'levels' and len(value) < NUM_LEVELS:
                         value.extend(
-                            DEFAULT_CONFIG['levels'][:(11-len(value))])
+                            DEFAULT_CONFIG['levels'][:(NUM_LEVELS-len(value))])
                     if arg in ('lives', 'points_per_pacgum',
                                'points_per_super_pacgum', 'points_per_ghost',
                                'level_max_time', 'seed'):

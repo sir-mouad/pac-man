@@ -47,11 +47,11 @@ class Highscores:
         """Return the first n highscore entries."""
         return [dict(entry) for entry in self.scores[:n]]
 
-    def qualifies(self, score: int) -> bool:
+    def qualifies(self, score: int) -> Any:
         """Return True if score would enter the top 10."""
         if len(self.scores) < 10:
             return True
-        return score > self.scores[-1]["score"]  # type: ignore[no-any-return]
+        return score > self.scores[-1]["score"]
 
     def add(self, name: str, score: int) -> None:
         """Add a new entry and keep only the top 10."""

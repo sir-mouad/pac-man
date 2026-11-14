@@ -1,5 +1,5 @@
 from typing import Any
-
+from abc import ABC, abstractmethod
 from engine.shared import Direction
 from collections import deque
 REVERSE = {
@@ -10,9 +10,10 @@ REVERSE = {
 }
 
 
-class GhostBehavior:
+class GhostBehavior(ABC):
     """Base class for the strategy each ghost uses to pick its target."""
-    def target(  # type: ignore[empty-body]
+    @abstractmethod
+    def target(
             self, level: Any, player: Any, blinky: Any) -> tuple[int, int]:
         """Return the cell this ghost wants to reach."""
         ...
