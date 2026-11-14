@@ -49,7 +49,7 @@ class GameEngine:
         self.player.step(self.level, frame_time)
         if self.player.direction is not None:
             self.ai.update(self.level, self.player, self.ghosts, frame_time)
-            self.rules.updtae_times(frame_time, self.ghosts)
+            self.rules.update_time(frame_time, self.ghosts)
         for g in self.ghosts:
             g.step(self.level, frame_time)
         eaten: list[Any] = []

@@ -6,7 +6,6 @@ from typing import Any
 
 class Highscores:
     """Top-10 highscore list saved as JSON on disk."""
-    last_error: str | None  # never set; reading it raises AttributeError
 
     def __init__(self, path: Any) -> None:
         """Load the highscore file at path when the object is created."""

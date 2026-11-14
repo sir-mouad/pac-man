@@ -61,7 +61,7 @@ class Parser:
                         else:
                             raise ValueError
                 return True
-        except ValueError:
+        except (ValueError, AttributeError, TypeError):
             print(f"WARNING: Invalid data in {arg} : {values}. "
                   "---> Use DEFAULT_VALUE.")
             return False

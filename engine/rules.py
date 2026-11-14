@@ -79,7 +79,7 @@ class GameRules:
                 self.lose_life(player, ghosts)
                 return
 
-    def updtae_times(self, frame_time: float, ghosts: list[Any]) -> None:
+    def update_time(self, frame_time: float, ghosts: list[Any]) -> None:
         """Count down the level timer and the power pellet timer."""
         if self.status is not State.PLAYING:
             return
@@ -91,13 +91,13 @@ class GameRules:
                 for ghost in ghosts:
                     ghost.edible = False
                     if self.level_number <= 7:
-                        self.seconds_per_cell = ghost.first_seconds - \
+                        ghost.seconds_per_cell = ghost.first_seconds - \
                             (self.level_number - 1) * 0.01
-                    elif self.level_number <= 11:
+                    elif ghost.level_number <= 11:
                         self.seconds_per_cell = ghost.first_seconds - \
                             (self.level_number - 1) * 0.02
                     else:
-                        self.seconds_per_cell = ghost.first_seconds - \
+                        ghost.seconds_per_cell = ghost.first_seconds - \
                             10 * 0.02
 
     def check_end(self, level: Any) -> None:

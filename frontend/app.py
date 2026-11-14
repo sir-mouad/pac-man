@@ -144,8 +144,7 @@ class Application:
                 self.notice_time = 6
                 self.navigate(Screen.MENU)
             else:
-                self.error = (self.engine.highscores.last_error
-                              or "Use 1-10 letters, numbers or spaces.")
+                self.error = ("Use 1-10 letters, numbers or spaces.")
 
     def logical_position(self, pos: tuple) -> tuple[float, float]:
         """Convert a window pixel position to canvas coordinates."""
