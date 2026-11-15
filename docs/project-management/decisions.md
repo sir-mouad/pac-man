@@ -1,20 +1,23 @@
 # Decisions
 
-- **Graphics library:** pygame. Checked against the MLX rule: every function used needs an MLX equivalent. [Confirm this check is complete before submission.]
-- **Maze generation:** the assigned A-Maze-ing package is used unmodified, with PERFECT set to False and seed 42 for level 1.
-- **Config format:** JSON with full-line `#` comments, read through a comment-stripping step. Missing or invalid values fall back to defaults and log a warning.
-- **Highscores:** stored in a JSON file, top 10, names limited to 10 alphanumeric characters and spaces, scores non-negative integers.
-- **Ghost behavior:** fixed targeting rules instead of random movement. Blinky targets the player, Pinky targets four cells ahead (up uses the straight rule, not the arcade left shift), Inky uses Blinky's position and the two-cell point, Clyde chases beyond 8 cells and retreats within it.
-- **Ghost flee rule:** all ghosts flee the same way when edible.
-- **Ghost hold:** ghosts stay still until Pac-Man has a direction, at the start of a level and after a life is lost.
-- **Grace period:** a ghost that returns after eating Pac-Man can't catch Pac-Man for 2 seconds.
-- **Cheats:** skip level, walk through walls (boundary still enforced), all pacgums become super-pacgums, end game with a fixed score, invincible.
-- **Frontend contract:** shared types live in `engine/shared.py`, and the frontend reads only the snapshot.
-- **Frontend architecture:** a single 60 FPS Pygame loop owns all screens. Engine updates run only on the playing screen, with a bounded frame delta and fixed 1/60-second steps. Visual easing follows observed snapshot cells; no game rules live in the frontend.
-- **Visual direction:** dark ink panels, warm yellow actions, teal maze walls, bundled Pygame typography, and original code-drawn sprites/wordmark. No runtime downloads or platform-dependent fonts.
-- **Window behavior:** a 1280 x 840 logical canvas scales to a resizable window with letterboxing; mouse coordinates are mapped back to the canvas. Losing focus pauses the engine.
-- **Runtime paths:** bundled resources resolve relative to the module location. Default scores and optional user config live in the OS user data directory; explicit configs resolve relative score paths beside themselves. `PACMAN_DATA_DIR` supports portable/test installs.
-- **Score writes:** write and flush a temporary file beside the score file, then atomically replace it. Failed saves roll back the in-memory entry and display an error on the name screen.
-- **Packaging:** PyInstaller builds the whole desktop application, including config and Pygame fonts. Builds must be produced and validated on each target OS/architecture.
-- **Ghost and super-pacgum placement:** [to confirm: shared corners or separate cells].
-- **Demo distribution:** Itch.io as a free build with restricted or draft visibility, so the page stays unlisted. Steam was rejected because it charges a fee per app and requires a review process, which is not needed for a demonstration.
+- **Graphics library:** pygame. The subject requires an MLX equivalent for every function used. That check is still open (see requirements.md).
+- **Maze generation:** the assigned A-Maze-ing package is used unmodified with `perfect=False`. Level 1 uses the configured seed (default 42). Later levels use seed 0, which the package treats as a random seed.
+- **Config format:** JSON. Lines starting with `#` are comments. Invalid or missing values print a warning and use the default. Unknown keys are ignored. The file name does not matter, only the content has to be JSON.
+- **Lives:** the default is 10, set in `config.json`. The subject's example uses 3. Open: decide whether to change the default to 3 before the defense.
+- **Highscores:** a JSON file named by `highscore_filename`, top 10, sorted from highest to lowest. Names are 1 to 10 letters, digits or spaces. Scores are non-negative integers. A missing file gives an empty table. An invalid file prints a warning and gives an empty table. A save error prints a warning, and the game continues.
+- **Highscore location:** the name in the config is used as given. A relative name is relative to the folder the game is started from. Use an absolute path in the config to keep the file in one place.
+- **Ghost behavior:** fixed target rules, not random movement. Blinky targets the player's cell. Pinky targets the cell four ahead of the player. Inky uses Blinky's position and the point two cells ahead of the player. Clyde chases while it is more than 8 cells away and goes to its corner when it is closer.
+- **Ghost flee rule:** when edible, every ghost moves away from the player.
+- **Ghost hold:** ghosts stay still until Pac-Man has a direction. This happens at the start of each level and after a life is lost.
+- **Protection after eating:** a ghost that Pac-Man eats cannot take a life for 5 seconds from the moment it is eaten. Its respawn wait is also 5 seconds, so it is back in its corner when the protection ends.
+- **Ghost speed:** each power pellet slows the ghosts that are not edible. When the power pellet's effect ends, every ghost goes back to the base speed for the level.
+- **Power pellets on level 11 and up:** they score, but they do not make ghosts edible when `imposible_levels` is `true`. The default is `false`, so power pellets work on every level.
+- **Level timer:** `level_max_time` seconds per level. The timer counts down only while Pac-Man has a direction, so the game waits for the first move. Open: decide whether the timer should count real time.
+- **Cheats:** 1 skip the level (clears pacgums and power pellets). 2 walk through walls, with the edge still enforced. 3 every pacgum becomes a super pacgum. 4 ghosts cannot take a life. 5 auto-win: victory with a very large score. 6 reset: turns off 2 and 4 and undoes 3.
+- **Ghost and super-pacgum placement:** both use the four corners. Ghost starts and super pacgums share the same corners. Pacgums fill every other open cell.
+- **Frontend contract:** shared types live in `engine/shared.py`. The frontend reads only the snapshot and never changes game rules.
+- **Frontend loop:** one pygame loop at 60 FPS owns all screens. The engine advances only on the playing screen, in fixed steps of 1/60 second, with elapsed time capped at 0.1 second.
+- **Window:** a 1280 x 840 canvas, scaled to the window with letterboxing. Losing window focus pauses the game.
+- **Visual direction:** dark panels, yellow for actions, teal for maze walls, and original sprites drawn in code. Text uses pygame's default font.
+- **Packaging:** a PyInstaller single-file executable. `config.json` is bundled with it. Only the Linux build has been made.
+- **Demo distribution:** Itch.io as a free unlisted build (restricted or draft visibility). Steam was rejected: it charges a fee per app and requires a review, which a demonstration does not need.

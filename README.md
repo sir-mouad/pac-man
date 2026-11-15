@@ -1,7 +1,7 @@
 *This project has been created as part of the 42 curriculum by mhadir, sreja.*
 
 # Pac-Man: Ghosts! More ghosts!
-![Image description](./docs/images/main-menu.png)
+![Main menu](./docs/images/main-menu.png)
 ## Description
 
 A playable Pac-Man game written in Python 3.13 with pygame. The player moves
@@ -27,6 +27,7 @@ Requirements: Python 3.13 and [uv](https://docs.astral.sh/uv/).
 make install     # uv sync, then installs the mazegenerator package from the zip
 make run         # starts the game with config.json from the project root
 make run ARG=/absolute/path/to/config.json   # use a different config file
+make debug       # runs the game under the Python debugger (pdb)
 make lint        # flake8 and mypy
 make build       # standalone executable in dist/pac-man (PyInstaller)
 make clean       # removes caches
@@ -74,27 +75,30 @@ Classic references:
 
 The game reads a JSON file. Lines starting with `#` are comments. Invalid
 values print a warning and fall back to the default for that setting. Unknown
-keys are ignored. A missing or unreadable file uses the defaults.
+keys are ignored. A missing or unreadable file uses the defaults. Any file name
+works, as long as the content is JSON.
 
 | Key | Default | Meaning |
 | --- | --- | --- |
-| `highscore_filename` | `"highscores.json"` | Score file name. Relative names are stored in the data directory, or beside the config file if one is given explicitly. Must end in `.json`. |
+| `highscore_filename` | `"highscores.json"` | File that stores the top 10 scores. A relative name is relative to the folder the game is started from. |
 | `levels` | 20 x 15 | List of `{"width", "height"}` objects, one per level. A list shorter than 10 entries is padded with 20 x 15 levels to 11 levels in total. |
-| `lives` | `10` | Lives at the start of a game. |
+| `lives` | `10` | Lives at the start of a game. The subject's example uses 3. |
 | `points_per_pacgum` | `10` | Points for each pacgum. |
 | `points_per_super_pacgum` | `50` | Points for each super pacgum. |
 | `points_per_ghost` | `200` | Points for each edible ghost eaten. |
-| `seed` | `42` | Maze seed for level 1. |
+| `seed` | `42` | Maze seed for level 1. A value of 0 or less falls back to 42. |
 | `level_max_time` | `180` | Seconds allowed per level. |
+| `imposible_levels` | `false` | When `true`, power pellets do not make ghosts edible from level 11 on. |
 
-Without a config argument, the game looks for `config.json` in the user data
-directory and then falls back to the copy bundled with the game, so it does not
-depend on the current working directory. `PACMAN_DATA_DIR` overrides the data
-directory.
+Without a config argument, the game reads `config.json` from the folder it is
+started from. If that file is missing, the defaults are used and a warning is
+printed.
 
 ## Highscore
 
-The top 10 scores are stored in a JSON file in the user data directory:
+The top 10 scores are stored in the file named by `highscore_filename`. A
+relative name is relative to the folder the game is started from, so use an
+absolute path if you want the file in one fixed place.
 
 The file has the form `{"highscores": [{"name": "...", "score": 0}]}`, sorted
 from highest to lowest.
@@ -138,14 +142,17 @@ the configured `seed`. Later levels use seed `0` as passed to the generator.
   cell. Pinky aims four cells ahead of the player. Inky uses Blinky's position
   to choose its target. Clyde chases while it is more than 8 cells away and
   returns to its corner when it is closer. When a power pellet is eaten, ghosts
-  turn blue for 8 seconds and move away from the player. An eaten ghost waits 3
-  seconds, then respawns in its corner.
+  turn blue for 8 seconds and move away from the player. An eaten ghost waits 5
+  seconds, then respawns in its corner. For the first 5 seconds after it is
+  eaten, it cannot take a life.
 - **Scoring and lives:** pacgums, power pellets and eaten ghosts add points, and
   points never decrease. A ghost touching the player costs a life unless the
   ghost is edible. Losing a life resets the player and ghosts.
 - **Levels:** a level ends when all pacgums and power pellets are eaten. The
   game is won after the last level. The game is over when lives reach zero or
-  the level timer runs out.
+  the level timer runs out. The level timer counts only while Pac-Man is moving.
+- **Power pellets:** they work on every level, unless `imposible_levels` is
+  `true`. Then they do not make ghosts edible from level 11 on.
 - **Pause:** P or Escape pauses. Losing window focus also pauses.
 - **Rendering:** the interface is drawn at a fixed 1280 x 840 and scaled to the
   window with letterboxing. The wall layer is cached and redrawn only when the
@@ -168,7 +175,6 @@ frontend/
   app.py                   Application: window, event loop, menus and game screens
   maze.py                  MazeRenderer: draws the maze and sprites from a snapshot
   theme.py                 Painter: palette, text and sprite drawing primitives
-  paths.py                 data_directory, default_config, score_path
 ```
 
 Data flows one way. The frontend asks the engine to advance, then reads a

@@ -36,5 +36,11 @@
 - What is next: interactive playtesting, confirming the highscore save path on the packaged build, and the MLX-equivalence review.
 
 ## 2026-11-14
-- What was done: wrote the project management documents.
-- What was tested: the documents against the subject's list of examples.
+- What was done: fixed parser errors and added comments to `config.json`. Handled invalid config data and fixed mypy errors. Removed the separate parser from `pac-man.py`, so the engine's parser is the only one. Removed the unused frontend path module. Simplified the highscore error handling and removed the unused error field. Added the optional `imposible_levels` config key. Hid the pygame support prompt in `make run`.
+- What was tested: flake8 and mypy after each change.
+- What is next: the open items in blockers.md.
+
+## 2026-11-15
+- What was done: added the cheat keys to the play screen (footer), and a Cheat mode guide reached from How To Play. The guide has a card for each cheat and says what it changes. Restructured the How To Play page to link to the guide.
+- What was tested: the How To Play, cheat guide and play screens rendered headlessly at 1280 x 840 and inspected. The parser against invalid config files: null and wrong-type values, a JSON array and a JSON string, a directory, an empty file. The highscore store with an empty name. Ghost speed after three power pellets, which stays at its base value. flake8 and mypy.
+- What is next: the open items in blockers.md and the checklist in requirements.md.
