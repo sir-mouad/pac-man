@@ -92,8 +92,8 @@ class ClydeBehavior(GhostBehavior):
 class GhostAI:
     """Chooses each ghost's direction and handles respawn delays."""
     def __init__(self) -> None:
-        """Create the AI with a 3-second respawn delay."""
-        self.respawn_delay = 3.0
+        """Create the AI with a 5-second respawn delay."""
+        self.respawn_delay = 5.0
         self.waiting: dict[Any, float] = {}
 
     def update(self, level: Any, player: Any, ghosts: list[Any],

@@ -42,6 +42,7 @@ class Screen(Enum):
     PAUSED = auto()
     SCORES = auto()
     INSTRUCTIONS = auto()
+    CHEATS = auto()
     RESULT = auto()
 
 
@@ -130,6 +131,8 @@ class Application:
             self.navigate(Screen.SCORES)
         elif action == "instructions":
             self.navigate(Screen.INSTRUCTIONS)
+        elif action == "cheats":
+            self.navigate(Screen.CHEATS)
         elif action == "exit":
             self.running = False
         elif action == "menu":
@@ -349,6 +352,14 @@ class Application:
             self.p.text("POWER PELLET = EDIBLE GHOSTS", (1213, 735), 18,
                         MUTED, "right")
         self.footer("P / ESC   PAUSE       •       TAKE IT ONE DOT AT A TIME")
+        label = self.p.text("CHEATS", (190, 806), 18, TEAL)
+        x = label.right + 22
+        for key, name in (("1", "SKIP"), ("2", "NOCLIP"), ("3", "SUPER"),
+                          ("4", "IMMORTAL"), ("5", "AUTO-WIN"),
+                          ("6", "RESET")):
+            k = self.p.text(key, (x, 806), 18, YELLOW)
+            n = self.p.text(name, (k.right + 6, 806), 18, MUTED)
+            x = n.right + 22
 
     def draw_pause(self) -> None:
         """Draw the game behind a dimmed pause menu."""
@@ -434,9 +445,42 @@ class Application:
                 "Names use 1-10 English letters, numbers or spaces.")):
             self.p.text(line, (449, 565 + i * 32), 24, MUTED)
         self.button((80, 713, 300, 50), "Back to main menu", "menu")
+        self.button((420, 713, 380, 50), "Cheat mode guide", "cheats")
         self.button((916, 713, 284, 50), "Let's play", "start", True)
         self.footer(
             "ARROWS / WASD   MOVE       P / ESC   PAUSE       ENTER   CONFIRM")
+
+    def draw_cheats(self) -> None:
+        """Draw the cheat mode guide with one card per cheat."""
+        self.page_title("CHEAT MODE", "Peer review tools.",
+                        "Each cheat changes the game in one clear way.")
+        cards = [
+            (80, "01", "Skip and no-clip.", (
+                "1  Skip: clears all dots and ends the level.",
+                "2  No-clip: walk through walls until Reset.",
+                "Use these to check level flow and rules.")),
+            (652, "02", "Super and immortal.", (
+                "3  Super: every dot becomes a power pellet.",
+                "4  Immortal: ghosts cannot take a life.",
+                "Immortal lasts until Reset (6).")),
+        ]
+        for x, number, title, lines in cards:
+            self.p.panel((x, 308, 548, 215))
+            self.p.label(number, (x + 25, 333), TEAL)
+            self.p.text(title, (x + 25, 365), 36)
+            for i, line in enumerate(lines):
+                self.p.text(line, (x + 25, 416 + i * 29), 24, MUTED)
+        self.p.panel((80, 544, 1120, 138))
+        self.p.label("03", (105, 569), TEAL)
+        self.p.text("Auto-win and reset.", (105, 599), 36)
+        for i, line in enumerate((
+                "5  Auto-win: jump to the victory screen at once.",
+                "6  Reset: turns off no-clip and immortal, undoes Super.",
+                "Cheats work only during play, not on menus.")):
+            self.p.text(line, (449, 565 + i * 32), 24, MUTED)
+        self.button((80, 713, 300, 50), "Back to how to play", "instructions")
+        self.button((916, 713, 284, 50), "Let's play", "start", True)
+        self.footer("1-6   CHEAT KEYS       ESC   MENU")
 
     def draw_result(self) -> None:
         """Draw the game-over or victory screen with the name box."""
@@ -482,6 +526,7 @@ class Application:
             Screen.MENU: self.draw_menu, Screen.PLAYING: self.draw_game,
             Screen.PAUSED: self.draw_pause, Screen.SCORES: self.draw_scores,
             Screen.INSTRUCTIONS: self.draw_instructions,
+            Screen.CHEATS: self.draw_cheats,
             Screen.RESULT: self.draw_result,
         }
         renderers[self.screen]()

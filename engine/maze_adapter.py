@@ -19,6 +19,7 @@ class Level:
 
 class MazeAdapter():
     """Builds each level from the assigned maze generator."""
+
     def __init__(self, config: dict[str, Any]) -> None:
         """Store the game configuration."""
         self.config = config
@@ -30,8 +31,8 @@ class MazeAdapter():
         try:
             maze = MazeGenerator(size, perfect=False, seed=seed)
         except Exception as e:
-            print(f"Error: level {index} is too large for the ")
-            (f"maze package ({e})")
+            print(f"Error: level {index} is too large for the "
+                  f"maze package ({e})")
             exit(1)
         walls = self._decode_walls(maze.maze)
         level = Level(width=size[0], height=size[1], walls=walls)

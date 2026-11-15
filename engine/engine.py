@@ -11,8 +11,7 @@ from engine.shared import State, GameSnapshot, GhostView, Cheat
 
 class GameEngine:
     """Runs one game session: maze, rules, ghosts, player, and highscores."""
-    def __init__(self, config: dict[str, Any],
-                 highscore_path: Any = None) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         """Create the engine and set where highscores are stored."""
         self.config = config
         self.highscores = Highscores(self.config["highscore_filename"])
